@@ -168,12 +168,8 @@
   <!-- AUTHENTIFIZIERUNGS ANSICHT -->
   <div id="auth-view">
     <div class="auth-box">
-      <select id="auth-lang-select" style="background: var(--sidebar); color: var(--text); border: 1px solid var(--text-muted); padding: 4px 8px; border-radius: 6px; align-self: flex-end; margin-bottom: -10px; font-size: 12px; cursor:pointer;">
-        <option value="en">🇬🇧 EN</option>
-        <option value="de">🇩🇪 DE</option>
-      </select>
       <div id="saved-accounts-view" style="display: none; flex-direction: column; gap: 10px; margin-bottom: 10px; width: 100%; border-bottom: 1px solid #404249; padding-bottom: 15px;">
-        <div id="saved-accounts-title" style="font-size: 13px; color: var(--text-muted); text-align: center; margin-bottom: 5px;">Gespeicherte Konten</div>
+        <div style="font-size: 13px; color: var(--text-muted); text-align: center; margin-bottom: 5px;">Gespeicherte Konten</div>
         <div id="login-account-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
       </div>
       <h2 id="auth-title">Einloggen</h2>
@@ -237,7 +233,7 @@
         </div>
       </div>
       <div id="messages"></div>
-      <div id="typing-indicator"><span id="typing-user"></span> <span id="typing-text">schreibt</span><span class="typing-dots"></span></div>
+      <div id="typing-indicator"><span id="typing-user"></span> schreibt<span class="typing-dots"></span></div>
       <div id="chat-form">
         <div id="emoji-picker"></div>
         <button id="emoji-btn" disabled>😀</button>
@@ -268,13 +264,6 @@
           <button id="settings-switch-btn" style="background: var(--sidebar); color: var(--text); border: 1px solid var(--text-muted);">🔄 Wechseln</button>
           <button id="settings-logout-btn" class="danger">Abmelden</button>
         </div>
-      </div>
-      <div class="settings-option">
-        <span>Sprache</span>
-        <select id="settings-lang-select" style="background: var(--sidebar); color: var(--text); border: 1px solid var(--text-muted); padding: 4px 8px; border-radius: 6px; cursor:pointer;">
-          <option value="en">🇬🇧 English</option>
-          <option value="de">🇩🇪 Deutsch</option>
-        </select>
       </div>
     </div>
   </div>
@@ -317,12 +306,7 @@
     socket.on('connect', () => {
       clearTimeout(disconnectTimeout);
       globalStatusBanner.style.background = '#23a559';
-      globalStatusBanner.innerText = t[currentLang].srvAwake;
-      if (typeof t !== 'undefined' && typeof currentLang !== 'undefined' && t[currentLang]) {
-        globalStatusBanner.innerText = t[currentLang].srvAwake;
-      } else {
-        globalStatusBanner.innerText = '🟢 Server ist hellwach und bereit!';
-      }
+      globalStatusBanner.innerText = '🟢 Server ist hellwach und bereit! Alles läuft jetzt blitzschnell.';
       setTimeout(() => { globalStatusBanner.style.top = '-50px'; }, 3000);
 
       // --- AUTO-LOGIN NACH RECONNECT ---
@@ -335,12 +319,7 @@
     socket.on('disconnect', () => {
       disconnectTimeout = setTimeout(() => {
         globalStatusBanner.style.background = '#ed4245';
-        globalStatusBanner.innerText = t[currentLang].srvSleep;
-        if (typeof t !== 'undefined' && typeof currentLang !== 'undefined' && t[currentLang]) {
-          globalStatusBanner.innerText = t[currentLang].srvSleep;
-        } else {
-          globalStatusBanner.innerText = '🔴 Server schläft oder Verbindung weg...';
-        }
+        globalStatusBanner.innerText = '🔴 Server schläft oder Verbindung weg... Wird automatisch geweckt!';
         globalStatusBanner.style.top = '0';
       }, 2000); // 2 Sekunden Verzögerung, damit es beim kurzen App-Wechsel nicht flackert
     });
@@ -397,173 +376,7 @@
     let typingTimeout;
     let vapidPublicKey = null;
 
-    // --- SPRACH-SYSTEM (I18N) ---
-    let currentLang = localStorage.getItem('messenger_lang');
-    if (currentLang !== 'en' && currentLang !== 'de') currentLang = 'en';
     let isLightMode = localStorage.getItem('messenger_theme') === 'light';
-    const t = {
-      en: {
-        loginTitle: "Login", regTitle: "Register", loginBtn: "Login", regBtn: "Create Account", 
-        toggleReg: "No account yet? Register", toggleLogin: "Already have an account? Login",
-        email: "Email", user: "Username", pass: "Password", saved: "Saved Accounts",
-        friends: "👤 Friends", groups: "👥 Groups", addFr: "Add username", addGr: "New group...",
-        selChat: "Select a chat", pic: "🖼️ Picture", del: "🗑️ Delete", leave: "🚪 Leave", inv: "➕ Invite", rem: "🗑️ Remove",
-        write: "Write a message...", send: "Send",
-        set: "Settings", theme: "Theme", pushInfo: "Push Info", acc: "Account", lang: "Language",
-        dark: "🌙 Dark", light: "☀️ Light", act: "🔔 Activate", sw: "🔄 Switch", logOut: "Logout",
-        kick: "🚫 Kick from group", invTitle: "Invite to group", enterUser: "Enter username...",
-        srvWait: "🔴 Server is waking up or offline... Please wait!",
-        srvAwake: "🟢 Server is awake and ready! Lightning fast.",
-        srvSleep: "🔴 Server sleeping or connection lost... Waking up!",
-        errWait: "Server not ready! Waking up takes ~50s. Please wait.",
-        fillAuth: "Please enter username and password!", fillEmail: "Please provide an email!",
-        waitBtn: "Please wait...", regSucc: "Account created! Logging in...",
-        pushOn: "✅ Notifications active!", pushOff: "❌ Notifications blocked.", pushUnsupp: "Browser not supported.",
-        delGrConf: "⚠️ Delete this group for everyone?", remFrConf: "Really remove this friend?",
-        leaveGrConf: "Really leave this group?",
-        grDelInfo: "ℹ️ Group was deleted by owner.", frRemInfo: " removed you as friend.",
-        chatWith: "Chat with ", typing: "typing",
-        oldE2E: "🔒 [Old Encryption]", notForYou: "🔒 [Not encrypted for you]",
-        waitPartner: "🔒 [Waiting for partner's key...]", noDecrypt: "🔒 [Cannot decrypt]",
-        sentMsg: "Sent you a message.", grSentMsg: "sent a message.",
-        errKey: "Key error: ", errReg: "Registration error: ", errEnc: "Encryption error: ", errSend: "Send error: "
-      },
-      de: {
-        loginTitle: "Einloggen", regTitle: "Registrieren", loginBtn: "Anmelden", regBtn: "Account erstellen", 
-        toggleReg: "Noch keinen Account? Registrieren", toggleLogin: "Bereits einen Account? Einloggen",
-        email: "E-Mail", user: "Benutzername", pass: "Passwort", saved: "Gespeicherte Konten",
-        friends: "👤 Freunde", groups: "👥 Gruppen", addFr: "Benutzername adden", addGr: "Neue Gruppe...",
-        selChat: "Wähle einen Chat aus der Liste", pic: "🖼️ Bild", del: "🗑️ Löschen", leave: "🚪 Verlassen", inv: "➕ Einladen", rem: "🗑️ Entfernen",
-        write: "Nachricht schreiben...", send: "Senden",
-        set: "Einstellungen", theme: "Design", pushInfo: "Push Info", acc: "Account", lang: "Sprache",
-        dark: "🌙 Dark", light: "☀️ Light", act: "🔔 Aktivieren", sw: "🔄 Wechseln", logOut: "Abmelden",
-        kick: "🚫 Aus Gruppe kicken", invTitle: "In Gruppe einladen", enterUser: "Benutzername eingeben...",
-        srvWait: "🔴 Server wacht auf oder ist offline... Bitte einen kurzen Moment warten!",
-        srvAwake: "🟢 Server ist hellwach und bereit! Alles läuft jetzt blitzschnell.",
-        srvSleep: "🔴 Server schläft oder Verbindung weg... Wird automatisch geweckt!",
-        errWait: "Server noch nicht bereit!\n\nDa der Server auf Render läuft, kann das Aufwachen nach einer Pause ca. 50 Sekunden dauern. Bitte warte einen kurzen Moment und versuche es gleich noch einmal!",
-        fillAuth: "Bitte Benutzername und Passwort ausfüllen!", fillEmail: "Bitte E-Mail angeben!",
-        waitBtn: "Bitte warten...", regSucc: "Account erfolgreich erstellt! Du wirst jetzt direkt eingeloggt.",
-        pushOn: "✅ Benachrichtigungen sind jetzt aktiv!", pushOff: "❌ Benachrichtigungen wurden blockiert.", pushUnsupp: "Dein Browser unterstützt das nicht.",
-        delGrConf: "⚠️ Willst du diese Gruppe wirklich für alle löschen?", remFrConf: "Willst du diesen Freund wirklich entfernen?",
-        leaveGrConf: "Willst du diese Gruppe wirklich verlassen?",
-        grDelInfo: "ℹ️ Eine Gruppe wurde vom Besitzer gelöscht.", frRemInfo: " hat dich als Freund entfernt.",
-        chatWith: "Chat mit ", typing: "schreibt",
-        oldE2E: "🔒 [Alte Verschlüsselung]", notForYou: "🔒 [Nicht für dich verschlüsselt]",
-        waitPartner: "🔒 [Warte auf Schlüssel vom Partner...]", noDecrypt: "🔒 [Nachricht kann nicht entschlüsselt werden]",
-        sentMsg: "Hat dir eine Nachricht gesendet.", grSentMsg: "hat eine Nachricht gesendet.",
-        errKey: "Schlüssel-Fehler: ", errReg: "Fehler bei Registrierung: ", errEnc: "Fehler bei der Verschlüsselung: ", errSend: "Fehler beim Senden: "
-      }
-    };
-
-    function translateServerMessage(msg) {
-      if (currentLang === 'de') return msg;
-      const map = {
-        'Benutzername ist bereits vergeben!': 'Username is already taken!',
-        'Falscher Benutzername oder Passwort!': 'Wrong username or password!',
-        'Benutzer existiert nicht!': 'User does not exist!',
-        'Du kannst dich nicht selbst adden!': 'You cannot add yourself!',
-        'Gruppe nicht gefunden!': 'Group not found!',
-        'Ist bereits in der Gruppe!': 'User is already in the group!',
-        'Nur der Gruppen-Ersteller (Owner) kann Leute kicken!': 'Only the group owner can kick members!',
-        'Du kannst dich nicht selbst kicken!': 'You cannot kick yourself!'
-      };
-      return map[msg] || msg;
-    }
-
-    function applyLanguage() {
-      const l = t[currentLang];
-      const authSel = document.getElementById('auth-lang-select');
-      const setSel = document.getElementById('settings-lang-select');
-      if (authSel) authSel.value = currentLang;
-      if (setSel) setSel.value = currentLang;
-
-      if(authTitle) authTitle.innerText = isLoginMode ? l.loginTitle : l.regTitle;
-      if(authBtn && !authBtn.disabled) authBtn.innerText = isLoginMode ? l.loginBtn : l.regBtn;
-      if(toggleAuth) toggleAuth.innerText = isLoginMode ? l.toggleReg : l.toggleLogin;
-      if(emailInput) emailInput.placeholder = l.email;
-      if(usernameInput) usernameInput.placeholder = l.user;
-      if(passwordInput) passwordInput.placeholder = l.pass;
-      const savedTitle = document.getElementById('saved-accounts-title');
-      if(savedTitle) savedTitle.innerText = l.saved;
-
-      if(tabFriendsBtn) tabFriendsBtn.innerText = l.friends;
-      if(tabGroupsBtn) tabGroupsBtn.innerText = l.groups;
-      if(addFriendInput) addFriendInput.placeholder = l.addFr;
-      const addGrpInp = document.getElementById('add-group-input');
-      if(addGrpInp) addGrpInp.placeholder = l.addGr;
-
-      if(chatPartnerName && !currentChatPartner && !currentGroupId) chatPartnerName.innerText = l.selChat;
-      else if (chatPartnerName && currentChatPartner) chatPartnerName.innerText = l.chatWith + currentChatPartner;
-      
-      const grpPicBtn = document.getElementById('group-pic-btn');
-      if(grpPicBtn) grpPicBtn.innerText = l.pic;
-      const grpDelBtn = document.getElementById('group-delete-btn');
-      if(grpDelBtn) grpDelBtn.innerText = l.del;
-      const grpLeaveBtn = document.getElementById('group-leave-btn');
-      if(grpLeaveBtn) grpLeaveBtn.innerText = l.leave;
-      if(inviteGroupBtn) inviteGroupBtn.innerText = l.inv;
-      const friendRemBtn = document.getElementById('friend-remove-btn');
-      if(friendRemBtn) friendRemBtn.innerText = l.rem;
-      if(messageInput) messageInput.placeholder = l.write;
-      if(sendBtn) sendBtn.innerText = l.send;
-      const typeTxt = document.getElementById('typing-text');
-      if(typeTxt) typeTxt.innerText = l.typing;
-
-      const setH2 = document.querySelector('#settings-modal h2');
-      if(setH2) setH2.innerText = l.set;
-      const setSpans = document.querySelectorAll('.settings-option > span');
-      if(setSpans.length >= 4) {
-        setSpans[0].innerText = l.theme;
-        setSpans[1].innerText = l.pushInfo;
-        setSpans[2].innerText = l.acc;
-        setSpans[3].innerText = l.lang;
-      }
-      if(settingsThemeBtn) settingsThemeBtn.innerText = isLightMode ? l.light : l.dark;
-      const setNotBtn = document.getElementById('settings-notify-btn');
-      if(setNotBtn && (setNotBtn.innerText.includes('Aktiv') || setNotBtn.innerText.includes('Activ'))) setNotBtn.innerText = l.act;
-      
-      const setSwBtn = document.getElementById('settings-switch-btn');
-      if(setSwBtn) setSwBtn.innerText = l.sw;
-      if(settingsLogoutBtn) settingsLogoutBtn.innerText = l.logOut;
-
-      const ctxKick = document.getElementById('ctx-kick');
-      if(ctxKick) ctxKick.innerText = l.kick;
-      const invH2 = document.querySelector('#invite-modal h2');
-      if(invH2) invH2.innerText = l.invTitle;
-      const invInp = document.getElementById('invite-input');
-      if(invInp) invInp.placeholder = l.enterUser;
-      const subInvBtn = document.getElementById('submit-invite-btn');
-      if(subInvBtn) subInvBtn.innerText = l.inv;
-
-      const gBanner = document.getElementById('global-status-banner');
-      if (gBanner) {
-        if (gBanner.innerText.includes('bereit') || gBanner.innerText.includes('ready')) gBanner.innerText = l.srvAwake;
-        else gBanner.innerText = l.srvWait;
-      }
-      
-      const e2e = document.querySelector('.e2e-badge');
-      if(e2e && currentLang === 'de') {
-        e2e.innerText = "🔒 E2E Aktiv";
-        e2e.title = "Nachrichten sind asymmetrisch Ende-zu-Ende verschlüsselt (ECDH + AES-GCM).";
-      } else if(e2e) {
-        e2e.innerText = "🔒 E2E Active";
-        e2e.title = "Messages are asymmetrically end-to-end encrypted (ECDH + AES-GCM).";
-      }
-    }
-
-    function switchLang(newLang) {
-      currentLang = newLang;
-      localStorage.setItem('messenger_lang', currentLang);
-      applyLanguage();
-    }
-    
-    applyLanguage();
-    
-    const authSel = document.getElementById('auth-lang-select');
-    if(authSel) authSel.addEventListener('change', (e) => switchLang(e.target.value));
-    const setSel = document.getElementById('settings-lang-select');
-    if(setSel) setSel.addEventListener('change', (e) => switchLang(e.target.value));
 
     // --- TABS NAVIGATION (MOBILE/DESKTOP) ---
     const tabFriendsBtn = document.getElementById('tab-friends-btn');
@@ -623,10 +436,10 @@
     function applyTheme() {
       if (isLightMode) {
         document.body.classList.add('light-mode');
-        if (settingsThemeBtn) settingsThemeBtn.innerText = t[currentLang].light;
+        if (settingsThemeBtn) settingsThemeBtn.innerText = '☀️ Light';
       } else {
         document.body.classList.remove('light-mode');
-        if (settingsThemeBtn) settingsThemeBtn.innerText = t[currentLang].dark;
+        if (settingsThemeBtn) settingsThemeBtn.innerText = '🌙 Dark';
       }
     }
     applyTheme(); 
@@ -645,7 +458,7 @@
         if ("Notification" in window) {
           Notification.requestPermission().then(permission => {
             if(permission === "granted") {
-              alert(t[currentLang].pushOn);
+              alert("✅ Benachrichtigungen sind jetzt aktiv!");
               
               // SOFORT BEIM KLICK ABONNIEREN!
               if ('serviceWorker' in navigator && 'PushManager' in window && vapidPublicKey) {
@@ -659,10 +472,10 @@
                 });
               }
             } else {
-              alert(t[currentLang].pushOff);
+              alert("❌ Benachrichtigungen wurden blockiert.");
             }
           });
-        } else alert(t[currentLang].pushUnsupp);
+        } else alert("Dein Browser unterstützt das nicht.");
       };
     }
 
@@ -818,7 +631,7 @@
            localStorage.setItem('e2e_pub_' + username, JSON.stringify(serverPubKey));
            return;
          } catch(e) {
-           throw new Error(t[currentLang].errEnc);
+           throw new Error("Falsches Passwort für die Verschlüsselung!");
          }
       }
       
@@ -844,7 +657,7 @@
     const groupDelBtn = document.getElementById('group-delete-btn');
     if (groupDelBtn) {
       groupDelBtn.onclick = () => {
-        if (confirm(t[currentLang].delGrConf)) {
+        if (confirm("⚠️ Willst du diese Gruppe wirklich für alle löschen?")) {
           socket.emit('delete group', currentGroupId); 
         }
       };
@@ -892,7 +705,7 @@
       ctxKick.onclick = () => {
         if (ctxGroupId && ctxUsername) {
           socket.emit('kick from group', { groupId: ctxGroupId, username: ctxUsername }, (res) => {
-            if (!res.success) alert(translateServerMessage(res.message));
+            if (!res.success) alert(res.message);
           });
         }
       };
@@ -933,12 +746,12 @@
 
     async function decryptText(ciphertextB64, ivB64, peerName) {
       const key = await getSharedKey(peerName);
-      if (!key) return t[currentLang].waitPartner;
+      if (!key) return "🔒 [Warte auf Schlüssel vom Partner...]";
       try {
         const decrypted = await window.crypto.subtle.decrypt({ name: "AES-GCM", iv: base64ToAb(ivB64) }, key, base64ToAb(ciphertextB64));
         return new TextDecoder().decode(decrypted);
       } catch (e) {
-        return t[currentLang].noDecrypt;
+        return "🔒 [Nachricht kann nicht entschlüsselt werden]";
       }
     }
 
@@ -953,7 +766,6 @@
     }
 
     // --- MULTI ACCOUNT SYSTEM ---
-    let savedAccounts = JSON.parse(localStorage.getItem('messenger_accounts') || '[]');
     let savedAccounts = [];
     try {
       savedAccounts = JSON.parse(localStorage.getItem('messenger_accounts') || '[]');
@@ -1019,9 +831,9 @@
     if (toggleAuth) {
       toggleAuth.onclick = () => {
         isLoginMode = !isLoginMode;
-        authTitle.innerText = isLoginMode ? t[currentLang].loginTitle : t[currentLang].regTitle;
-        authBtn.innerText = isLoginMode ? t[currentLang].loginBtn : t[currentLang].regBtn;
-        toggleAuth.innerText = isLoginMode ? t[currentLang].toggleReg : t[currentLang].toggleLogin;
+        authTitle.innerText = isLoginMode ? 'Einloggen' : 'Registrieren';
+        authBtn.innerText = isLoginMode ? 'Anmelden' : 'Account erstellen';
+        toggleAuth.innerText = isLoginMode ? 'Noch keinen Account? Registrieren' : 'Bereits einen Account? Einloggen';
         emailInput.style.display = isLoginMode ? 'none' : 'block';
       };
     }
@@ -1056,17 +868,17 @@
     if (authBtn) {
       authBtn.onclick = async () => {
         if (!socket.connected) {
-          return alert(t[currentLang].errWait);
+          return alert("Server noch nicht bereit!\n\nDa der Server auf Render läuft, kann das Aufwachen nach einer Pause ca. 50 Sekunden dauern. Bitte warte einen kurzen Moment und versuche es gleich noch einmal!");
         }
 
         try {
           const username = usernameInput.value.trim();
           const password = passwordInput.value.trim();
           const email = emailInput ? emailInput.value.trim() : '';
-          if (!username || !password) return alert(t[currentLang].fillAuth);
+          if (!username || !password) return alert('Bitte Benutzername und Passwort ausfüllen!');
 
           const originalText = authBtn.innerText;
-          authBtn.innerText = t[currentLang].waitBtn;
+          authBtn.innerText = "Bitte warten...";
           authBtn.disabled = true;
 
           if (isLoginMode) {
@@ -1076,12 +888,12 @@
                   await restoreOrInitKeys(username, password, res.publicKey, res.encryptedPrivKey);
                   handleLoginResponse(res);
                 } else {
-              alert(translateServerMessage(res.message));
+                  alert(res.message);
                   authBtn.innerText = originalText;
                   authBtn.disabled = false;
                 }
               } catch(e) {
-                alert(t[currentLang].errKey + e.message);
+                alert("Fehler beim Laden der Schlüssel: " + e.message);
                 console.error(e);
                 authBtn.innerText = originalText;
                 authBtn.disabled = false;
@@ -1091,47 +903,47 @@
             if (!email) {
               authBtn.innerText = originalText;
               authBtn.disabled = false;
-              return alert(t[currentLang].fillEmail);
+              return alert('Bitte E-Mail angeben!');
             }
             try {
               const keys = await generateAndBackupKeys(username, password);
               socket.emit('register', { email, username, password, publicKey: keys.publicKey, encryptedPrivKey: keys.encryptedPrivKey }, (res) => {
                 try {
                   if (res.success) {
-                    alert(t[currentLang].regSucc);
+                    alert('Account erfolgreich erstellt! Du wirst jetzt direkt eingeloggt.');
                     socket.emit('login', { username, password }, async (resLogin) => {
                       try {
                         if (resLogin.success) {
                           handleLoginResponse(resLogin);
                         }
                       } catch(e) {
-                        alert(t[currentLang].errKey + e.message);
+                        alert("Schlüssel-Fehler nach Registrierung: " + e.message);
                       } finally {
                         authBtn.innerText = originalText;
                         authBtn.disabled = false;
                       }
                     });
                   } else {
-                alert(translateServerMessage(res.message));
+                    alert(res.message);
                     authBtn.innerText = originalText;
                     authBtn.disabled = false;
                   }
                 } catch(e) {
-                  alert(t[currentLang].errReg + e.message);
+                  alert("Fehler bei Registrierung: " + e.message);
                   authBtn.innerText = originalText;
                   authBtn.disabled = false;
                 }
               });
             } catch(e) {
-              alert(t[currentLang].errKey + e.message);
+              alert("Konnte Schlüssel nicht generieren: " + e.message);
               authBtn.innerText = originalText;
               authBtn.disabled = false;
             }
           }
         } catch (err) {
-          authBtn.innerText = isLoginMode ? t[currentLang].loginBtn : t[currentLang].regBtn;
+          authBtn.innerText = isLoginMode ? 'Anmelden' : 'Account erstellen';
           authBtn.disabled = false;
-          alert(t[currentLang].errEnc + err.message);
+          alert("Fehler bei der Verschlüsselung: " + err.message);
           console.error(err);
         }
       };
@@ -1195,7 +1007,7 @@
           });
         }
       } else {
-        alert(translateServerMessage(res.message));
+        alert(res.message);
         localStorage.removeItem('messenger_user');
         localStorage.removeItem('messenger_pass');
       }
@@ -1217,7 +1029,7 @@
               addFriendToList(friendName, res.isOnline, res.profilePic);
               addFriendInput.value = '';
             } else {
-          alert(translateServerMessage(res.message));
+              alert(res.message);
             }
           });
         }
@@ -1319,7 +1131,7 @@
         if (friendName) {
           socket.emit('invite to group', { groupId: currentGroupId, username: friendName }, (res) => {
             if (res.success) document.getElementById('invite-modal').style.display = 'none';
-          else alert(translateServerMessage(res.message));
+            else alert(res.message);
           });
         }
       };
@@ -1364,11 +1176,11 @@
       }
       if (currentChatPartner === friendName) {
         currentChatPartner = null;
-        if(chatPartnerName) chatPartnerName.innerText = t[currentLang].selChat;
+        if(chatPartnerName) chatPartnerName.innerText = "Wähle einen Chat";
         if(messagesContainer) messagesContainer.innerHTML = '';
         if(document.getElementById('friend-remove-btn')) document.getElementById('friend-remove-btn').style.display = 'none';
         if(chatEncryption) chatEncryption.style.display = 'none';
-        alert("ℹ️ " + friendName + " " + t[currentLang].frRemInfo);
+        alert(`ℹ️ ${friendName} hat dich als Freund entfernt.`);
       }
     });
 
@@ -1394,14 +1206,14 @@
     const friendRemBtn = document.getElementById('friend-remove-btn');
     if (friendRemBtn) {
       friendRemBtn.onclick = () => {
-        if (currentChatPartner && confirm(t[currentLang].remFrConf)) {
+        if (currentChatPartner && confirm(`Willst du ${currentChatPartner} wirklich als Freund entfernen?`)) {
           socket.emit('remove friend', currentChatPartner, (res) => {
             if (res.success) {
               if (document.getElementById('friend-' + currentChatPartner)) {
                 document.getElementById('friend-' + currentChatPartner).remove();
               }
               currentChatPartner = null;
-              if(chatPartnerName) chatPartnerName.innerText = t[currentLang].selChat;
+              if(chatPartnerName) chatPartnerName.innerText = "Wähle einen Chat";
               if(messagesContainer) messagesContainer.innerHTML = '';
               friendRemBtn.style.display = 'none';
               if(chatEncryption) chatEncryption.style.display = 'none';
@@ -1415,7 +1227,7 @@
     const groupLeaveBtn = document.getElementById('group-leave-btn');
     if (groupLeaveBtn) {
       groupLeaveBtn.onclick = () => {
-        if (currentGroupId && confirm(t[currentLang].leaveGrConf)) {
+        if (currentGroupId && confirm("Willst du diese Gruppe wirklich verlassen?")) {
           socket.emit('leave group', currentGroupId, (res) => {
             if (res.success) {
               if (document.getElementById('group-' + currentGroupId)) {
@@ -1423,7 +1235,7 @@
               }
               delete myGroups[currentGroupId];
               currentGroupId = null;
-              if(chatPartnerName) chatPartnerName.innerText = t[currentLang].selChat;
+              if(chatPartnerName) chatPartnerName.innerText = "Wähle einen Chat";
               if(messagesContainer) messagesContainer.innerHTML = '';
               groupLeaveBtn.style.display = 'none';
               if(inviteGroupBtn) inviteGroupBtn.style.display = 'none';
@@ -1453,7 +1265,7 @@
       if (document.getElementById('group-' + groupId)) document.getElementById('group-' + groupId).remove();
       if (currentGroupId === groupId) {
         currentGroupId = null;
-        if(chatPartnerName) chatPartnerName.innerText = t[currentLang].selChat;
+        if(chatPartnerName) chatPartnerName.innerText = "Wähle einen Chat";
         if(groupMembersList) groupMembersList.style.display = 'none';
         if(inviteGroupBtn) inviteGroupBtn.style.display = 'none';
         if(messagesContainer) messagesContainer.innerHTML = '';
@@ -1467,18 +1279,18 @@
         if (window.innerWidth <= 768 && typeof mobileBackBtn !== 'undefined' && mobileBackBtn) mobileBackBtn.click();
         else { 
           currentGroupId = null; 
-          if(chatPartnerName) chatPartnerName.innerText = t[currentLang].selChat; 
+          if(chatPartnerName) chatPartnerName.innerText = "Wähle einen Chat"; 
           if(messagesContainer) messagesContainer.innerHTML = ''; 
         }
       }
-      alert(t[currentLang].grDelInfo);
+      alert("ℹ️ Eine Gruppe wurde vom Besitzer gelöscht.");
     });
 
     // --- CHAT SYSTEM ---
     function openChat(friendName) {
       currentChatPartner = friendName;
       currentGroupId = null;
-      if(chatPartnerName) chatPartnerName.innerText = t[currentLang].chatWith + friendName;
+      if(chatPartnerName) chatPartnerName.innerText = 'Chat mit ' + friendName;
       if(chatEncryption) chatEncryption.style.display = 'flex';
       if(groupMembersList) groupMembersList.style.display = 'none';
       if(inviteGroupBtn) inviteGroupBtn.style.display = 'none';
@@ -1503,7 +1315,7 @@
         const decryptedHistory = [];
         for (let msg of history) {
           if (msg.iv) msg.text = await decryptText(msg.text, msg.iv, friendName);
-          else if (msg.text.startsWith('E2E:')) msg.text = t[currentLang].oldE2E;
+          else if (msg.text.startsWith('E2E:')) msg.text = "🔒 [Alte Verschlüsselung]";
           decryptedHistory.push(msg);
         }
         chatHistory[friendName] = decryptedHistory;
@@ -1555,7 +1367,7 @@
             if (payload.iv) msg.text = await decryptText(payload.text, payload.iv, msg.from);
             else msg.text = payload.text;
           } else {
-            msg.text = t[currentLang].notForYou;
+            msg.text = "🔒 [Nicht für dich verschlüsselt]";
           }
           decryptedHistory.push(msg);
         }
@@ -1641,7 +1453,7 @@
           messageInput.value = '';
         }
       } catch (err) {
-        alert(t[currentLang].errSend + err.message);
+        alert("Fehler beim Senden: " + err.message);
         console.error(err);
       }
     }
@@ -1691,7 +1503,7 @@
                    playNotificationSound(true);
                 }
               } catch (err) {
-            alert(t[currentLang].errSend + err.message);
+            alert("Fehler beim Senden des Bildes: " + err.message);
                 console.error(err);
               }
             };
@@ -1737,7 +1549,7 @@
       if (!chatHistory[chatWith]) chatHistory[chatWith] = [];
       
       if (msg.iv) msg.text = await decryptText(msg.text, msg.iv, chatWith);
-      else if (msg.text.startsWith('E2E:')) msg.text = t[currentLang].oldE2E;
+      else if (msg.text.startsWith('E2E:')) msg.text = "🔒 [Alte Verschlüsselung]";
 
       if (msg.from === currentUser) {
         msg.read = false;
@@ -1754,7 +1566,7 @@
       
       if (msg.from !== currentUser) {
         playNotificationSound();
-        if (typeof showPushNotification === 'function') showPushNotification(msg.from, t[currentLang].sentMsg);
+        if (typeof showPushNotification === 'function') showPushNotification(msg.from, "Hat dir eine Nachricht gesendet.");
       }
     });
 
@@ -1764,12 +1576,12 @@
       if (payload) {
         if (payload.iv) msg.text = await decryptText(payload.text, payload.iv, msg.from);
         else msg.text = payload.text;
-      } else msg.text = t[currentLang].notForYou;
+      } else msg.text = "🔒 [Nicht für dich verschlüsselt]";
       chatHistory[msg.groupId].push(msg);
       if (currentGroupId === msg.groupId) renderMessages();
       if (msg.from !== currentUser) {
         playNotificationSound();
-        if (typeof showPushNotification === 'function') showPushNotification(`Group: ${myGroups[msg.groupId]?.name || "Unknown"}`, `${msg.from} ${t[currentLang].grSentMsg}`);
+        if (typeof showPushNotification === 'function') showPushNotification(`Gruppe: ${myGroups[msg.groupId]?.name || "Unbekannt"}`, `${msg.from} hat eine Nachricht gesendet.`);
       }
     });
 
