@@ -25,5 +25,11 @@ self.addEventListener('push', function(e) {
 
 self.addEventListener('notificationclick', function(e) {
   e.notification.close();
-  e.waitUntil(clients.openWindow('/'));
+  e.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
+    if (windowClients.length > 0) {
+      return windowClients[0].focus(); // Holt die App in den Vordergrund, wenn sie im Hintergrund offen ist!
+    } else {
+      return clients.openWindow('./'); // Öffnet den korrekten GitHub-Pages Pfad statt der 404-Seite!
+    }
+  }));
 });
