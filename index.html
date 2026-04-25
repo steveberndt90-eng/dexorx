@@ -609,7 +609,6 @@
     if (settingsBtn) settingsBtn.onclick = () => settingsModal.style.display = 'flex';
 
     // --- THEME SYSTEM (Dark/Light Mode) ---
-    let isLightMode = localStorage.getItem('messenger_theme') === 'light';
     function applyTheme() {
       if (isLightMode) {
         document.body.classList.add('light-mode');
