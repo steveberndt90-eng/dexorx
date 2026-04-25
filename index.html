@@ -174,26 +174,31 @@
   <!-- HAUPT MESSENGER ANSICHT -->
   <div id="app-view">
     <div id="sidebar">
-      <div id="sidebar-header">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-          <h3 style="margin: 0;">Freunde</h3>
-          <button id="settings-btn" title="Einstellungen">⚙️</button>
-        </div>
-        <div id="add-friend-box">
-          <input id="add-friend-input" type="text" placeholder="Benutzername adden" />
-          <button id="add-friend-btn">+</button>
-        </div>
+      <div id="sidebar-tabs" style="display: flex; border-bottom: 1px solid #1e1f22; align-items: center;">
+        <div class="sidebar-tab active" id="tab-btn-friends">Chats</div>
+        <div class="sidebar-tab" id="tab-btn-groups">Gruppen</div>
+        <button id="settings-btn" title="Einstellungen" style="margin: 0 10px;">⚙️</button>
       </div>
-      <ul id="friend-list"></ul>
+
+      <div id="tab-content-friends" class="tab-content active">
+        <div style="padding: 15px;">
+          <div id="add-friend-box">
+            <input id="add-friend-input" type="text" placeholder="Benutzername adden" />
+            <button id="add-friend-btn">+</button>
+          </div>
+        </div>
+        <ul id="friend-list"></ul>
+      </div>
       
-      <div id="sidebar-groups-header" style="padding: 10px 15px 0; border-top: 1px solid #1e1f22; margin-top: 5px;">
-        <h3 style="margin: 0 0 10px 0;">Gruppen</h3>
-        <div id="add-group-box" style="display: flex; gap: 8px;">
-          <input id="add-group-input" type="text" placeholder="Neue Gruppe..." style="flex: 1; padding: 8px; border: none; border-radius: 6px; background: #1e1f22; color: white; font-size: 13px; outline: none;" />
-          <button id="add-group-btn" style="background: var(--accent); color: white; border: none; border-radius: 6px; cursor: pointer; padding: 0 12px; font-weight: bold;">+</button>
+      <div id="tab-content-groups" class="tab-content">
+        <div style="padding: 15px;">
+          <div id="add-group-box" style="display: flex; gap: 8px;">
+            <input id="add-group-input" type="text" placeholder="Neue Gruppe..." style="flex: 1; padding: 10px; border: none; border-radius: 6px; background: #1e1f22; color: white; font-size: 13px; outline: none;" />
+            <button id="add-group-btn" style="background: var(--accent); color: white; border: none; border-radius: 6px; cursor: pointer; padding: 0 14px; font-weight: bold; transition: 0.2s;">+</button>
+          </div>
         </div>
+        <ul id="group-list"></ul>
       </div>
-      <ul id="group-list"></ul>
 
       <div id="my-profile" style="padding: 15px; border-top: 1px solid #202225; display: flex; align-items: center; gap: 10px;">
         <div id="my-avatar" class="avatar" style="cursor: pointer;" title="Profilbild ändern"></div>
