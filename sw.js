@@ -29,7 +29,7 @@ self.addEventListener('notificationclick', function(e) {
     if (windowClients.length > 0) {
       return windowClients[0].focus(); // Holt die App in den Vordergrund, wenn sie im Hintergrund offen ist!
     } else {
-      return clients.openWindow('./'); // Öffnet den korrekten GitHub-Pages Pfad statt der 404-Seite!
+      return clients.openWindow(self.registration.scope); // Nutzt absolut sicher den Hauptordner der App!
     }
   }));
 });
