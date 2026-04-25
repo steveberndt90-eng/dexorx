@@ -318,6 +318,11 @@
       clearTimeout(disconnectTimeout);
       globalStatusBanner.style.background = '#23a559';
       globalStatusBanner.innerText = t[currentLang].srvAwake;
+      if (typeof t !== 'undefined' && typeof currentLang !== 'undefined' && t[currentLang]) {
+        globalStatusBanner.innerText = t[currentLang].srvAwake;
+      } else {
+        globalStatusBanner.innerText = '🟢 Server ist hellwach und bereit!';
+      }
       setTimeout(() => { globalStatusBanner.style.top = '-50px'; }, 3000);
 
       // --- AUTO-LOGIN NACH RECONNECT ---
@@ -331,6 +336,11 @@
       disconnectTimeout = setTimeout(() => {
         globalStatusBanner.style.background = '#ed4245';
         globalStatusBanner.innerText = t[currentLang].srvSleep;
+        if (typeof t !== 'undefined' && typeof currentLang !== 'undefined' && t[currentLang]) {
+          globalStatusBanner.innerText = t[currentLang].srvSleep;
+        } else {
+          globalStatusBanner.innerText = '🔴 Server schläft oder Verbindung weg...';
+        }
         globalStatusBanner.style.top = '0';
       }, 2000); // 2 Sekunden Verzögerung, damit es beim kurzen App-Wechsel nicht flackert
     });
@@ -944,6 +954,11 @@
 
     // --- MULTI ACCOUNT SYSTEM ---
     let savedAccounts = JSON.parse(localStorage.getItem('messenger_accounts') || '[]');
+    let savedAccounts = [];
+    try {
+      savedAccounts = JSON.parse(localStorage.getItem('messenger_accounts') || '[]');
+      if (!Array.isArray(savedAccounts)) savedAccounts = [];
+    } catch(e) { savedAccounts = []; }
 
     function saveAccount(username, password) {
       savedAccounts = savedAccounts.filter(a => a.username !== username);
