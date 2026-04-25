@@ -390,6 +390,7 @@
     // --- SPRACH-SYSTEM (I18N) ---
     let currentLang = localStorage.getItem('messenger_lang');
     if (currentLang !== 'en' && currentLang !== 'de') currentLang = 'en';
+    let isLightMode = localStorage.getItem('messenger_theme') === 'light';
     const t = {
       en: {
         loginTitle: "Login", regTitle: "Register", loginBtn: "Login", regBtn: "Create Account", 
