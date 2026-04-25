@@ -6,7 +6,7 @@
   <title>Dex Messager</title>
   <style>
     :root { --bg: #1e1f22; --sidebar: #2b2d31; --main: #313338; --text: #dbdee1; --text-muted: #949ba4; --accent: #5865F2; --accent-hover: #4752c4; }
-    body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; overflow: hidden; }
+    body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); height: 100vh; height: 100dvh; display: flex; overflow: hidden; }
     
     /* Eigene Scrollbalken */
     ::-webkit-scrollbar { width: 8px; }
@@ -38,7 +38,7 @@
 
     /* --- LOGIN & REGISTRIERUNG --- */
     #auth-view { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; background: linear-gradient(135deg, #1e1f22, #2b2d31); }
-    .auth-box { background: var(--main); padding: 40px; border-radius: 12px; width: 320px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+    .auth-box { background: var(--main); padding: 40px; border-radius: 12px; width: 340px; max-width: 90%; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); box-sizing: border-box; }
     .auth-box h2 { margin: 0 0 15px 0; text-align: center; color: #fff; font-size: 24px; }
     .auth-box input { padding: 14px; border: none; border-radius: 6px; background: #1e1f22; color: white; outline: none; font-size: 14px; transition: 0.2s; }
     .auth-box input:focus { box-shadow: 0 0 0 2px var(--accent); }
@@ -52,8 +52,15 @@
     
     /* Seitenleiste (Freunde) */
     #sidebar { width: 280px; background: var(--sidebar); display: flex; flex-direction: column; box-sizing: border-box; }
-    #sidebar-header { padding: 20px 15px; border-bottom: 1px solid #1e1f22; }
-    #sidebar h3 { margin: 0 0 15px 0; font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    #sidebar-header { padding: 20px 15px 15px 15px; }
+    #sidebar-header h3 { margin: 0; font-size: 16px; color: var(--text); font-weight: bold; }
+    
+    /* Tabs Styling */
+    .tab-btn { flex: 1; text-align: center; padding: 12px; cursor: pointer; color: var(--text-muted); font-weight: bold; font-size: 14px; border-bottom: 2px solid transparent; transition: 0.2s; }
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab-btn:hover:not(.active) { color: var(--text); background: rgba(255,255,255,0.03); }
+    body.light-mode .tab-btn:hover:not(.active) { background: rgba(0,0,0,0.03); }
+
     #add-friend-box { display: flex; gap: 8px; }
     #add-friend-box input { flex: 1; padding: 10px; border: none; border-radius: 6px; background: #1e1f22; color: white; outline: none; font-size: 13px; }
     #add-friend-box button { background: var(--accent); color: white; border: none; border-radius: 6px; cursor: pointer; padding: 0 14px; font-weight: bold; transition: 0.2s; }
@@ -63,11 +70,11 @@
     #friend-list li:hover { background: #35373c; color: var(--text); }
     #friend-list li.active { background: #404249; color: #fff; }
     
-    #group-list { list-style: none; padding: 10px; margin: 0; overflow-y: auto; max-height: 30vh; }
+    #group-list { list-style: none; padding: 10px; margin: 0; overflow-y: auto; flex: 1; }
     #group-list li { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 6px; cursor: pointer; margin-bottom: 4px; color: var(--text-muted); font-weight: 500; transition: 0.1s; }
     #group-list li:hover { background: #35373c; color: var(--text); }
     #group-list li.active { background: #404249; color: #fff; }
-    .group-avatar { width: 32px; height: 32px; border-radius: 8px; background-color: #23a559; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; flex-shrink: 0; }
+    .group-avatar { width: 36px; height: 36px; border-radius: 10px; background-color: #23a559; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; flex-shrink: 0; background-position: center; background-size: cover; }
 
     .status-dot { width: 12px; height: 12px; border-radius: 50%; background: #80848e; flex-shrink: 0; transition: 0.3s; border: 2px solid var(--sidebar); }
     .status-dot.online { background: #23a559; }
@@ -105,7 +112,7 @@
     .msg-status.read { color: #28f0e4; text-shadow: 0 0 3px rgba(40,240,228,0.4); } 
     .msg-image { max-width: 100%; max-height: 250px; border-radius: 8px; object-fit: contain; margin-top: 5px; }
 
-    #chat-form { padding: 20px; display: flex; gap: 10px; background: var(--main); position: relative; }
+    #chat-form { padding: 20px; padding-bottom: max(20px, env(safe-area-inset-bottom)); display: flex; gap: 10px; background: var(--main); position: relative; }
     #emoji-btn { background: transparent; color: var(--text-muted); border: none; font-size: 20px; cursor: pointer; transition: 0.2s; padding: 0 10px; }
     #emoji-btn:hover { color: var(--text); transform: scale(1.1); }
     #emoji-btn:disabled { color: #555; cursor: not-allowed; transform: none; }
@@ -135,12 +142,11 @@
     /* --- MOBILE ANPASSUNGEN --- */
     #mobile-back-btn { display: none; background: transparent; color: var(--text); border: none; font-size: 20px; cursor: pointer; padding-right: 15px; }
     @media (max-width: 768px) {
-      .auth-box, .settings-box { width: 90%; padding: 20px; box-sizing: border-box; }
       #sidebar { width: 100%; }
       #main-chat { display: none; width: 100%; }
       #mobile-back-btn { display: block; }
       .msg { max-width: 90%; }
-      #chat-form { padding: 10px; }
+      #chat-form { padding: 10px; padding-bottom: max(10px, env(safe-area-inset-bottom)); }
       #message-input { padding: 12px 15px; }
       #send-btn { padding: 0 15px; }
       #emoji-picker { width: calc(100vw - 40px); left: 10px; bottom: 60px; }
@@ -176,24 +182,25 @@
     <div id="sidebar">
       <div id="sidebar-header">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-          <h3 style="margin: 0;">Freunde</h3>
+          <h3 style="margin: 0; font-size: 16px; color: var(--text); font-weight: bold;">Dex Messager</h3>
           <button id="settings-btn" title="Einstellungen">⚙️</button>
         </div>
-        <div id="add-friend-box">
-          <input id="add-friend-input" type="text" placeholder="Benutzername adden" />
-          <button id="add-friend-btn">+</button>
-        </div>
       </div>
-      <ul id="friend-list"></ul>
       
-      <div id="sidebar-groups-header" style="padding: 10px 15px 0; border-top: 1px solid #1e1f22; margin-top: 5px;">
-        <h3 style="margin: 0 0 10px 0;">Gruppen</h3>
-        <div id="add-group-box" style="display: flex; gap: 8px;">
-          <input id="add-group-input" type="text" placeholder="Neue Gruppe..." style="flex: 1; padding: 8px; border: none; border-radius: 6px; background: #1e1f22; color: white; font-size: 13px; outline: none;" />
-          <button id="add-group-btn" style="background: var(--accent); color: white; border: none; border-radius: 6px; cursor: pointer; padding: 0 12px; font-weight: bold;">+</button>
-        </div>
+      <div id="sidebar-tabs" style="display:flex; border-bottom:1px solid #1e1f22; margin-bottom: 5px;">
+        <div id="tab-friends-btn" class="tab-btn active">👤 Freunde</div>
+        <div id="tab-groups-btn" class="tab-btn">👥 Gruppen</div>
       </div>
-      <ul id="group-list"></ul>
+
+      <div id="tab-friends-view" style="display:flex; flex-direction:column; flex:1; overflow:hidden;">
+        <div style="padding: 10px 15px;"><div id="add-friend-box"><input id="add-friend-input" type="text" placeholder="Benutzername adden" /><button id="add-friend-btn">+</button></div></div>
+        <ul id="friend-list"></ul>
+      </div>
+
+      <div id="tab-groups-view" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
+        <div style="padding: 10px 15px;"><div id="add-group-box" style="display: flex; gap: 8px;"><input id="add-group-input" type="text" placeholder="Neue Gruppe..." style="flex: 1; padding: 10px; border: none; border-radius: 6px; background: #1e1f22; color: white; font-size: 13px; outline: none;" /><button id="add-group-btn" style="background: var(--accent); color: white; border: none; border-radius: 6px; cursor: pointer; padding: 0 14px; font-weight: bold;">+</button></div></div>
+        <ul id="group-list"></ul>
+      </div>
 
       <div id="my-profile" style="padding: 15px; border-top: 1px solid #202225; display: flex; align-items: center; gap: 10px;">
         <div id="my-avatar" class="avatar" style="cursor: pointer;" title="Profilbild ändern"></div>
@@ -208,6 +215,11 @@
         <div style="display:flex; flex-direction:column; flex:1;">
           <span id="chat-partner-name">Wähle einen Chat aus der Liste</span>
           <div id="group-members-list" style="display:none; font-size:12px; color:var(--text-muted); margin-top:4px;"></div>
+        </div>
+        <div id="group-owner-actions" style="display:none; gap: 8px; margin-right: 10px;">
+          <button id="group-pic-btn" style="background: var(--sidebar); color: var(--text); border: 1px solid var(--text-muted); padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;">🖼️ Bild</button>
+          <input type="file" id="group-pic-upload" accept="image/*" style="display: none;" />
+          <button id="group-delete-btn" style="background: #ed4245; color: white; border: none; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;">🗑️ Löschen</button>
         </div>
         <button id="invite-group-btn" style="display: none; background: var(--sidebar); color: var(--text); border: 1px solid var(--text-muted); padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;">➕ Einladen</button>
         <div id="chat-encryption" style="display: none; margin-left: 10px;">
@@ -235,6 +247,10 @@
       <div class="settings-option">
         <span>Design</span>
         <button id="settings-theme-btn">🌙 Dark</button>
+      </div>
+      <div class="settings-option">
+        <span>Push Info</span>
+        <button id="settings-notify-btn" style="background: transparent; color: var(--text); border: 1px solid var(--text-muted);">🔔 Aktivieren</button>
       </div>
       <div class="settings-option">
         <span>Account</span>
@@ -269,14 +285,12 @@
   <!-- Socket.io Client-Bibliothek laden -->
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script>
-       const defaultServer = 'https://dexormessager.onrender.com';
+    const defaultServer = 'https://dexormessager.onrender.com';
     const socket = io(defaultServer);
     
     // --- ANTI-SCHLAF MODUS & STATUS ---
-    // Weckt den Server per HTTP-Ping direkt beim App-Start
     fetch(defaultServer).catch(() => {});
     
-    // Sendet alle 4 Minuten einen unsichtbaren Ping, damit Render NIEMALS einschläft!
     setInterval(() => {
       fetch(defaultServer).catch(() => {});
     }, 4 * 60 * 1000);
@@ -285,12 +299,12 @@
     socket.on('connect', () => {
       globalStatusBanner.style.background = '#23a559';
       globalStatusBanner.innerText = '🟢 Server ist hellwach und bereit! Alles läuft jetzt blitzschnell.';
-      setTimeout(() => { globalStatusBanner.style.top = '-50px'; }, 3000); // Sanft nach oben ausblenden
+      setTimeout(() => { globalStatusBanner.style.top = '-50px'; }, 3000);
     });
     socket.on('disconnect', () => {
       globalStatusBanner.style.background = '#ed4245';
       globalStatusBanner.innerText = '🔴 Server schläft oder Verbindung weg... Wird automatisch geweckt!';
-      globalStatusBanner.style.top = '0'; // Wieder einblenden
+      globalStatusBanner.style.top = '0';
     });
 
     // UI Elemente
@@ -325,18 +339,23 @@
     const chatImageUpload = document.getElementById('chat-image-upload');
     const messageInput = document.getElementById('message-input');
     const sendBtn = document.getElementById('send-btn');
+    
+    // Mobile Elemente
+    const mobileBackBtn = document.getElementById('mobile-back-btn');
+    const sidebar = document.getElementById('sidebar');
+    const mainChat = document.getElementById('main-chat');
 
     let isLoginMode = true;
     let currentUser = null;
     let currentChatPartner = null;
     let currentGroupId = null;
-    let chatHistory = {}; // Speichert die Nachrichten { "freundName": [ {from, text} ] }
+    let chatHistory = {}; 
     
     // Krypto-Variablen
     let myKeyPair = null;
-    let friendPublicKeys = {}; // { username: jwk }
-    let sharedKeys = {}; // { username: CryptoKey }
-    let myGroups = {}; // { groupId: groupObj }
+    let friendPublicKeys = {}; 
+    let sharedKeys = {}; 
+    let myGroups = {}; 
     let typingTimeout;
 
     // --- TABS NAVIGATION (MOBILE/DESKTOP) ---
@@ -345,24 +364,28 @@
     const tabFriendsView = document.getElementById('tab-friends-view');
     const tabGroupsView = document.getElementById('tab-groups-view');
 
-    tabFriendsBtn.onclick = () => {
-      tabFriendsBtn.classList.add('active'); tabGroupsBtn.classList.remove('active');
-      tabFriendsView.style.display = 'flex'; tabGroupsView.style.display = 'none';
-    };
-    tabGroupsBtn.onclick = () => {
-      tabGroupsBtn.classList.add('active'); tabFriendsBtn.classList.remove('active');
-      tabGroupsView.style.display = 'flex'; tabFriendsView.style.display = 'none';
-    };
+    if (tabFriendsBtn && tabGroupsBtn) {
+      tabFriendsBtn.onclick = () => {
+        tabFriendsBtn.classList.add('active'); tabGroupsBtn.classList.remove('active');
+        tabFriendsView.style.display = 'flex'; tabGroupsView.style.display = 'none';
+      };
+      tabGroupsBtn.onclick = () => {
+        tabGroupsBtn.classList.add('active'); tabFriendsBtn.classList.remove('active');
+        tabGroupsView.style.display = 'flex'; tabFriendsView.style.display = 'none';
+      };
+    }
 
     // --- MOBILE UI SYSTEM ---
-    mobileBackBtn.onclick = () => {
-      sidebar.style.display = 'flex';
-      mainChat.style.display = 'none';
-      currentChatPartner = null;
-      currentGroupId = null;
-      document.querySelectorAll('#friend-list li').forEach(li => li.classList.remove('active'));
-      document.querySelectorAll('#group-list li').forEach(li => li.classList.remove('active'));
-    };
+    if (mobileBackBtn) {
+      mobileBackBtn.onclick = () => {
+        sidebar.style.display = 'flex';
+        mainChat.style.display = 'none';
+        currentChatPartner = null;
+        currentGroupId = null;
+        document.querySelectorAll('#friend-list li').forEach(li => li.classList.remove('active'));
+        document.querySelectorAll('#group-list li').forEach(li => li.classList.remove('active'));
+      };
+    }
 
     function showMobileChat() {
       if (window.innerWidth <= 768) {
@@ -387,38 +410,43 @@
     });
 
     // --- EINSTELLUNGEN ---
-    settingsBtn.onclick = () => settingsModal.style.display = 'flex';
+    if (settingsBtn) settingsBtn.onclick = () => settingsModal.style.display = 'flex';
 
     // --- THEME SYSTEM (Dark/Light Mode) ---
     let isLightMode = localStorage.getItem('messenger_theme') === 'light';
     function applyTheme() {
       if (isLightMode) {
         document.body.classList.add('light-mode');
-        settingsThemeBtn.innerText = '☀️ Light';
+        if (settingsThemeBtn) settingsThemeBtn.innerText = '☀️ Light';
       } else {
         document.body.classList.remove('light-mode');
-        settingsThemeBtn.innerText = '🌙 Dark';
+        if (settingsThemeBtn) settingsThemeBtn.innerText = '🌙 Dark';
       }
     }
-    applyTheme(); // Direkt beim Start laden
-    settingsThemeBtn.onclick = () => {
-      isLightMode = !isLightMode;
-      localStorage.setItem('messenger_theme', isLightMode ? 'light' : 'dark');
-      applyTheme();
-    };
+    applyTheme(); 
+    if (settingsThemeBtn) {
+      settingsThemeBtn.onclick = () => {
+        isLightMode = !isLightMode;
+        localStorage.setItem('messenger_theme', isLightMode ? 'light' : 'dark');
+        applyTheme();
+      };
+    }
 
     // --- PUSH BENACHRICHTIGUNGEN ---
-    document.getElementById('settings-notify-btn').onclick = () => {
-      if ("Notification" in window) {
-        Notification.requestPermission().then(permission => {
-          if(permission === "granted") {
-            alert("✅ Benachrichtigungen sind jetzt aktiv!");
-          } else {
-            alert("❌ Benachrichtigungen wurden blockiert.");
-          }
-        });
-      } else alert("Dein Browser unterstützt das nicht.");
-    };
+    const notifyBtn = document.getElementById('settings-notify-btn');
+    if (notifyBtn) {
+      notifyBtn.onclick = () => {
+        if ("Notification" in window) {
+          Notification.requestPermission().then(permission => {
+            if(permission === "granted") {
+              alert("✅ Benachrichtigungen sind jetzt aktiv!");
+            } else {
+              alert("❌ Benachrichtigungen wurden blockiert.");
+            }
+          });
+        } else alert("Dein Browser unterstützt das nicht.");
+      };
+    }
 
     function showPushNotification(title, body) {
       if (document.hidden || document.visibilityState !== 'visible') {
@@ -430,43 +458,48 @@
 
     // --- EMOJI SYSTEM ---
     const emojis = ['😀','😂','😅','❤️','😍','🙏','👍','😭','✨','🔥','💀','💯','👀','🥺','🥰','😎'];
-    emojis.forEach(emp => {
-      const span = document.createElement('span');
-      span.className = 'emoji-item';
-      span.innerText = emp;
-      span.onclick = () => {
-        messageInput.value += emp;
-        messageInput.focus();
-        emojiPicker.style.display = 'none';
-      };
-      emojiPicker.appendChild(span);
-    });
-    emojiBtn.onclick = () => emojiPicker.style.display = emojiPicker.style.display === 'flex' ? 'none' : 'flex';
+    if (emojiPicker) {
+      emojis.forEach(emp => {
+        const span = document.createElement('span');
+        span.className = 'emoji-item';
+        span.innerText = emp;
+        span.onclick = () => {
+          messageInput.value += emp;
+          messageInput.focus();
+          emojiPicker.style.display = 'none';
+        };
+        emojiPicker.appendChild(span);
+      });
+    }
+    if (emojiBtn) emojiBtn.onclick = () => emojiPicker.style.display = emojiPicker.style.display === 'flex' ? 'none' : 'flex';
 
     // --- BILDER ZOOM (MODAL) ---
     const imageModal = document.getElementById('image-modal');
     const modalImg = document.getElementById('modal-img');
     
     function openImageModal(src) {
+      if (!modalImg || !imageModal) return;
       modalImg.src = src;
-      modalImg.style.transform = 'scale(1)'; // Zurücksetzen
+      modalImg.style.transform = 'scale(1)'; 
       imageModal.style.display = 'flex';
     }
     
     function closeImageModal() {
+      if (!modalImg || !imageModal) return;
       imageModal.style.display = 'none';
       modalImg.src = '';
     }
     
-    // Mit Mausrad im Modal zoomen
-    imageModal.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      let currentScale = parseFloat(modalImg.style.transform.replace('scale(', '').replace(')', '')) || 1;
-      currentScale += e.deltaY < 0 ? 0.15 : -0.15; // hoch scrollen = rein, runter = raus
-      if (currentScale < 0.5) currentScale = 0.5;
-      if (currentScale > 4) currentScale = 4;
-      modalImg.style.transform = `scale(${currentScale})`;
-    });
+    if (imageModal) {
+      imageModal.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        let currentScale = parseFloat(modalImg.style.transform.replace('scale(', '').replace(')', '')) || 1;
+        currentScale += e.deltaY < 0 ? 0.15 : -0.15; 
+        if (currentScale < 0.5) currentScale = 0.5;
+        if (currentScale > 4) currentScale = 4;
+        modalImg.style.transform = `scale(${currentScale})`;
+      });
+    }
 
     // --- SOUND & VERSCHLÜSSELUNG ---
     function playNotificationSound(isSend = false) {
@@ -480,11 +513,11 @@
         if (isSend) {
           osc.frequency.setValueAtTime(600, ctx.currentTime);
           osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.1);
-          gain.gain.setValueAtTime(0.1, ctx.currentTime); // Leiseres "Plopp" beim Senden
+          gain.gain.setValueAtTime(0.1, ctx.currentTime); 
         } else {
           osc.frequency.setValueAtTime(800, ctx.currentTime);
           osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.1);
-          gain.gain.setValueAtTime(0.5, ctx.currentTime); // Helles "Ding" beim Empfangen
+          gain.gain.setValueAtTime(0.5, ctx.currentTime); 
         }
         gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
         osc.start(ctx.currentTime);
@@ -492,7 +525,6 @@
       } catch(e) {}
     }
 
-    // --- ECHTE E2E VERSCHLÜSSELUNG (ECDH + AES-GCM) ---
     const cryptoConfig = { name: "ECDH", namedCurve: "P-256" };
 
     async function getPasswordKey(username, password) {
@@ -515,7 +547,6 @@
       localStorage.setItem('e2e_pub_' + username, JSON.stringify(exportedPub));
       myKeyPair = { privateKey: keyPair.privateKey, publicKey: exportedPub };
       
-      // Privaten Schlüssel als Backup für die Cloud verschlüsseln
       const aesKey = await getPasswordKey(username, password);
       const iv = window.crypto.getRandomValues(new Uint8Array(12));
       const encrypted = await window.crypto.subtle.encrypt(
@@ -535,7 +566,6 @@
       let useLocal = false;
       if (localPriv && localPub) {
         const parsedLocalPub = JSON.parse(localPub);
-        // Wir prüfen zwingend, ob der Server den gleichen Key hat (wichtig bei 2 Fenstern/PCs!)
         if (!serverPubKey || JSON.stringify(parsedLocalPub) === JSON.stringify(serverPubKey)) {
           useLocal = true;
         }
@@ -558,7 +588,6 @@
       }
       
       if (serverEncryptedPriv && serverPubKey) {
-         // Schlüssel aus der Cloud wiederherstellen!
          try {
            const aesKey = await getPasswordKey(username, password);
            const decrypted = await window.crypto.subtle.decrypt({ name: "AES-GCM", iv: base64ToAb(serverEncryptedPriv.iv) }, aesKey, base64ToAb(serverEncryptedPriv.data));
@@ -575,7 +604,6 @@
          }
       }
       
-      // Fallback: Neu generieren (falls es noch kein Cloud-Backup gab)
       const newKeys = await generateAndBackupKeys(username, password);
       socket.emit('update keys', newKeys); 
     }
@@ -583,9 +611,8 @@
     async function getSharedKey(peerName) {
       if (sharedKeys[peerName]) return sharedKeys[peerName];
       const peerPubJwk = friendPublicKeys[peerName];
-      if (!peerPubJwk) return null; // Der Freund hat noch keinen Public Key registriert
+      if (!peerPubJwk) return null; 
       
-      // Importiere den fremden Public Key und generiere den gemeinsamen AES-Schlüssel
       const peerPubKey = await window.crypto.subtle.importKey("jwk", peerPubJwk, cryptoConfig, true, []);
       const sharedKey = await window.crypto.subtle.deriveKey(
         { name: "ECDH", public: peerPubKey }, myKeyPair.privateKey,
@@ -596,53 +623,69 @@
     }
 
     // --- GRUPPEN BILD & LÖSCHEN (OWNER) ---
-    document.getElementById('group-delete-btn').onclick = () => {
-      if (confirm("⚠️ Willst du diese Gruppe wirklich für alle löschen?")) {
-        socket.emit('delete group', currentGroupId);
-      }
-    };
+    const groupDelBtn = document.getElementById('group-delete-btn');
+    if (groupDelBtn) {
+      groupDelBtn.onclick = () => {
+        if (confirm("⚠️ Willst du diese Gruppe wirklich für alle löschen?")) {
+          socket.emit('delete group', currentGroupId); 
+        }
+      };
+    }
 
-    document.getElementById('group-pic-btn').onclick = () => document.getElementById('group-pic-upload').click();
-    document.getElementById('group-pic-upload').onchange = function() {
-      const file = this.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const img = new Image();
-          img.onload = async function() {
-            const canvas = document.createElement('canvas');
-            const MAX = 400; let w = img.width; let h = img.height;
-            if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } } else { if (h > MAX) { w *= MAX / h; h = MAX; } }
-            canvas.width = w; canvas.height = h;
-            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-            const base64 = canvas.toDataURL('image/jpeg', 0.8);
-            
-            if(myGroups[currentGroupId]) myGroups[currentGroupId].pic = base64;
-            addGroupToList(myGroups[currentGroupId]);
-            socket.emit('update group pic', { groupId: currentGroupId, pic: base64 });
+    const groupPicBtn = document.getElementById('group-pic-btn');
+    const groupPicUp = document.getElementById('group-pic-upload');
+    if (groupPicBtn && groupPicUp) {
+      groupPicBtn.onclick = () => groupPicUp.click();
+      groupPicUp.onchange = function() {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const img = new Image();
+            img.onload = async function() {
+              const canvas = document.createElement('canvas');
+              const MAX = 400; let w = img.width; let h = img.height;
+              if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } } else { if (h > MAX) { w *= MAX / h; h = MAX; } }
+              canvas.width = w; canvas.height = h;
+              canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+              const base64 = canvas.toDataURL('image/jpeg', 0.8);
+              
+              if(myGroups[currentGroupId]) myGroups[currentGroupId].pic = base64;
+              addGroupToList(myGroups[currentGroupId]); 
+              socket.emit('update group pic', { groupId: currentGroupId, pic: base64 });
+            };
+            img.src = e.target.result;
           };
-          img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    };
+          reader.readAsDataURL(file);
+        }
+      };
+    }
 
     // --- KONTEXT MENÜ FÜR GRUPPEN ---
     let ctxGroupId = null;
     let ctxUsername = null;
-    document.addEventListener('click', () => document.getElementById('ctx-menu').style.display = 'none');
+    document.addEventListener('click', () => {
+      const menu = document.getElementById('ctx-menu');
+      if(menu) menu.style.display = 'none';
+    });
     
-    document.getElementById('ctx-kick').onclick = () => {
-      if (ctxGroupId && ctxUsername) {
-        socket.emit('kick from group', { groupId: ctxGroupId, username: ctxUsername }, (res) => {
-          if (!res.success) alert(res.message);
-        });
-      }
-    };
+    const ctxKick = document.getElementById('ctx-kick');
+    if (ctxKick) {
+      ctxKick.onclick = () => {
+        if (ctxGroupId && ctxUsername) {
+          socket.emit('kick from group', { groupId: ctxGroupId, username: ctxUsername }, (res) => {
+            if (!res.success) alert(res.message);
+          });
+        }
+      };
+    }
+
     function showContextMenu(x, y, groupId, username) {
       ctxGroupId = groupId; ctxUsername = username;
       const menu = document.getElementById('ctx-menu');
-      menu.style.left = x + 'px'; menu.style.top = y + 'px'; menu.style.display = 'block';
+      if (menu) {
+        menu.style.left = x + 'px'; menu.style.top = y + 'px'; menu.style.display = 'block';
+      }
     }
 
     function abToBase64(ab) {
@@ -662,7 +705,7 @@
 
     async function encryptText(text, peerName) {
       const key = await getSharedKey(peerName);
-      if (!key) return { ciphertext: `[Ungesichert] ${text}`, iv: null }; // Fallback falls Freund keinen Key hat
+      if (!key) return { ciphertext: `[Ungesichert] ${text}`, iv: null }; 
 
       const encoded = new TextEncoder().encode(text);
       const iv = window.crypto.getRandomValues(new Uint8Array(12));
@@ -682,12 +725,14 @@
     }
 
     // --- LOGOUT ---
-    settingsLogoutBtn.onclick = () => {
-      removeAccount(currentUser);
-      localStorage.removeItem('messenger_user');
-      localStorage.removeItem('messenger_pass');
-      location.reload();
-    };
+    if (settingsLogoutBtn) {
+      settingsLogoutBtn.onclick = () => {
+        removeAccount(currentUser);
+        localStorage.removeItem('messenger_user');
+        localStorage.removeItem('messenger_pass');
+        location.reload();
+      };
+    }
 
     // --- MULTI ACCOUNT SYSTEM ---
     let savedAccounts = JSON.parse(localStorage.getItem('messenger_accounts') || '[]');
@@ -705,6 +750,7 @@
     }
 
     function renderAccountLists() {
+      if (!loginAccountList || !savedAccountsView) return;
       loginAccountList.innerHTML = '';
       
       if (savedAccounts.length > 0 && !localStorage.getItem('messenger_user')) {
@@ -738,39 +784,39 @@
 
     renderAccountLists();
 
-    settingsSwitchBtn.onclick = () => {
-      localStorage.removeItem('messenger_user');
-      localStorage.removeItem('messenger_pass');
-      location.reload();
-    };
+    if (settingsSwitchBtn) {
+      settingsSwitchBtn.onclick = () => {
+        localStorage.removeItem('messenger_user');
+        localStorage.removeItem('messenger_pass');
+        location.reload();
+      };
+    }
 
     // --- LOGIN SYSTEM ---
-    toggleAuth.onclick = () => {
-      isLoginMode = !isLoginMode;
-      authTitle.innerText = isLoginMode ? 'Einloggen' : 'Registrieren';
-      authBtn.innerText = isLoginMode ? 'Anmelden' : 'Account erstellen';
-      toggleAuth.innerText = isLoginMode ? 'Noch keinen Account? Registrieren' : 'Bereits einen Account? Einloggen';
-      emailInput.style.display = isLoginMode ? 'none' : 'block';
-    };
+    if (toggleAuth) {
+      toggleAuth.onclick = () => {
+        isLoginMode = !isLoginMode;
+        authTitle.innerText = isLoginMode ? 'Einloggen' : 'Registrieren';
+        authBtn.innerText = isLoginMode ? 'Anmelden' : 'Account erstellen';
+        toggleAuth.innerText = isLoginMode ? 'Noch keinen Account? Registrieren' : 'Bereits einen Account? Einloggen';
+        emailInput.style.display = isLoginMode ? 'none' : 'block';
+      };
+    }
 
-    // Prüfe, ob wir bereits eingeloggt sind
     const savedUser = localStorage.getItem('messenger_user');
     const savedPass = localStorage.getItem('messenger_pass');
     if (savedUser && savedPass) {
       socket.emit('login', { username: savedUser, password: savedPass }, async (res) => {
-        // Sicherheitsnetz für den Auto-Login
         try {
           if (res.success) {
             await restoreOrInitKeys(savedUser, savedPass, res.publicKey, res.encryptedPrivKey);
             handleLoginResponse(res);
           } else {
-            // Wenn der Server den Login ablehnt, löschen wir die gespeicherten Daten
             localStorage.removeItem('messenger_user');
             localStorage.removeItem('messenger_pass');
-            renderAccountLists(); // Zeige die Account-Liste im Login-Screen wieder an
+            renderAccountLists(); 
           }
         } catch(e) {
-          // Wenn die Schlüssel-Wiederherstellung fehlschlägt, loggen wir den Nutzer aus
           console.error("Auto-Login Key Error:", e.message);
           localStorage.removeItem('messenger_user');
           localStorage.removeItem('messenger_pass');
@@ -779,121 +825,121 @@
       });
     }
 
-    // Erlaube das Absenden des Formulars mit der Enter-Taste
-    const handleEnter = (e) => { if (e.key === 'Enter') authBtn.click(); };
-    emailInput.addEventListener('keypress', handleEnter);
-    usernameInput.addEventListener('keypress', handleEnter);
-    passwordInput.addEventListener('keypress', handleEnter);
+    const handleEnter = (e) => { if (e.key === 'Enter' && authBtn) authBtn.click(); };
+    if (emailInput) emailInput.addEventListener('keypress', handleEnter);
+    if (usernameInput) usernameInput.addEventListener('keypress', handleEnter);
+    if (passwordInput) passwordInput.addEventListener('keypress', handleEnter);
 
-    authBtn.onclick = async () => {
-      // Prüfen, ob wir wirklich mit dem Server verbunden sind
-      if (!socket.connected) {
-        return alert("Server noch nicht bereit!\n\nDa der Server auf Render läuft, kann das Aufwachen nach einer Pause ca. 50 Sekunden dauern. Bitte warte einen kurzen Moment und versuche es gleich noch einmal!");
-      }
+    if (authBtn) {
+      authBtn.onclick = async () => {
+        if (!socket.connected) {
+          return alert("Server noch nicht bereit!\n\nDa der Server auf Render läuft, kann das Aufwachen nach einer Pause ca. 50 Sekunden dauern. Bitte warte einen kurzen Moment und versuche es gleich noch einmal!");
+        }
 
-      try {
-        const username = usernameInput.value.trim();
-        const password = passwordInput.value.trim();
-        const email = emailInput.value.trim();
-        if (!username || !password) return alert('Bitte Benutzername und Passwort ausfüllen!');
+        try {
+          const username = usernameInput.value.trim();
+          const password = passwordInput.value.trim();
+          const email = emailInput ? emailInput.value.trim() : '';
+          if (!username || !password) return alert('Bitte Benutzername und Passwort ausfüllen!');
 
-        const originalText = authBtn.innerText;
-        authBtn.innerText = "Bitte warten...";
-        authBtn.disabled = true;
+          const originalText = authBtn.innerText;
+          authBtn.innerText = "Bitte warten...";
+          authBtn.disabled = true;
 
-        if (isLoginMode) {
-          // Sicherheitsnetz für den manuellen Login
-          socket.emit('login', { username, password }, async (res) => {
-            try {
-              if (res.success) {
-                await restoreOrInitKeys(username, password, res.publicKey, res.encryptedPrivKey);
-                handleLoginResponse(res);
-              } else {
-                alert(res.message);
-              }
-            } catch(e) {
-              alert("Fehler beim Laden der Schlüssel: " + e.message);
-              console.error(e);
-            } finally {
-              // Stelle sicher, dass der Button immer wieder freigegeben wird
-              authBtn.innerText = originalText;
-              authBtn.disabled = false;
-            }
-          });
-        } else {
-          if (!email) {
-            authBtn.innerText = originalText;
-            authBtn.disabled = false;
-            return alert('Bitte E-Mail angeben!');
-          }
-          // Sicherheitsnetz für die Registrierung
-          try {
-            const keys = await generateAndBackupKeys(username, password);
-            socket.emit('register', { email, username, password, publicKey: keys.publicKey, encryptedPrivKey: keys.encryptedPrivKey }, (res) => {
+          if (isLoginMode) {
+            socket.emit('login', { username, password }, async (res) => {
               try {
                 if (res.success) {
-                  alert('Account erfolgreich erstellt! Du wirst jetzt direkt eingeloggt.');
-                  socket.emit('login', { username, password }, async (resLogin) => {
-                    try {
-                      if (resLogin.success) {
-                        // Hier brauchen wir kein restoreOrInitKeys, da wir die Keys gerade erst erstellt haben
-                        handleLoginResponse(resLogin);
-                      }
-                    } catch(e) {
-                      alert("Schlüssel-Fehler nach Registrierung: " + e.message);
-                    } finally {
-                      authBtn.innerText = originalText;
-                      authBtn.disabled = false;
-                    }
-                  });
+                  await restoreOrInitKeys(username, password, res.publicKey, res.encryptedPrivKey);
+                  handleLoginResponse(res);
                 } else {
                   alert(res.message);
                   authBtn.innerText = originalText;
                   authBtn.disabled = false;
                 }
               } catch(e) {
-                alert("Fehler bei Registrierung: " + e.message);
+                alert("Fehler beim Laden der Schlüssel: " + e.message);
+                console.error(e);
                 authBtn.innerText = originalText;
                 authBtn.disabled = false;
               }
             });
-          } catch(e) {
-            alert("Konnte Schlüssel nicht generieren: " + e.message);
-            authBtn.innerText = originalText;
-            authBtn.disabled = false;
+          } else {
+            if (!email) {
+              authBtn.innerText = originalText;
+              authBtn.disabled = false;
+              return alert('Bitte E-Mail angeben!');
+            }
+            try {
+              const keys = await generateAndBackupKeys(username, password);
+              socket.emit('register', { email, username, password, publicKey: keys.publicKey, encryptedPrivKey: keys.encryptedPrivKey }, (res) => {
+                try {
+                  if (res.success) {
+                    alert('Account erfolgreich erstellt! Du wirst jetzt direkt eingeloggt.');
+                    socket.emit('login', { username, password }, async (resLogin) => {
+                      try {
+                        if (resLogin.success) {
+                          handleLoginResponse(resLogin);
+                        }
+                      } catch(e) {
+                        alert("Schlüssel-Fehler nach Registrierung: " + e.message);
+                      } finally {
+                        authBtn.innerText = originalText;
+                        authBtn.disabled = false;
+                      }
+                    });
+                  } else {
+                    alert(res.message);
+                    authBtn.innerText = originalText;
+                    authBtn.disabled = false;
+                  }
+                } catch(e) {
+                  alert("Fehler bei Registrierung: " + e.message);
+                  authBtn.innerText = originalText;
+                  authBtn.disabled = false;
+                }
+              });
+            } catch(e) {
+              alert("Konnte Schlüssel nicht generieren: " + e.message);
+              authBtn.innerText = originalText;
+              authBtn.disabled = false;
+            }
           }
+        } catch (err) {
+          authBtn.innerText = isLoginMode ? 'Anmelden' : 'Account erstellen';
+          authBtn.disabled = false;
+          alert("Fehler bei der Verschlüsselung: " + err.message);
+          console.error(err);
         }
-      } catch (err) {
-        authBtn.innerText = isLoginMode ? 'Anmelden' : 'Account erstellen';
-        authBtn.disabled = false;
-        alert("Fehler bei der Verschlüsselung: " + err.message);
-        console.error(err);
-      }
-    };
+      };
+    }
 
     function handleLoginResponse(res) {
       if (res.success) {
         currentUser = usernameInput.value.trim() || savedUser;
         const currentPass = passwordInput.value.trim() || savedPass;
-        // Daten speichern, um eingeloggt zu bleiben
         saveAccount(currentUser, currentPass);
         localStorage.setItem('messenger_user', currentUser);
         localStorage.setItem('messenger_pass', currentPass);
 
-        authView.style.display = 'none';
-        appView.style.display = 'flex';
+        if(authView) authView.style.display = 'none';
+        if(appView) appView.style.display = 'flex';
         
-        document.getElementById('my-username-display').innerText = currentUser;
-        if (res.profilePic) document.getElementById('my-avatar').style.backgroundImage = `url(${res.profilePic})`;
+        const nameDisp = document.getElementById('my-username-display');
+        if(nameDisp) nameDisp.innerText = currentUser;
+        
+        const myAv = document.getElementById('my-avatar');
+        if (res.profilePic && myAv) myAv.style.backgroundImage = `url(${res.profilePic})`;
 
-        // Freundesliste laden
-        friendList.innerHTML = '';
+        if (friendList) friendList.innerHTML = '';
         res.friends.forEach(f => {
           friendPublicKeys[f.name] = f.publicKey;
           addFriendToList(f.name, f.online, f.profilePic);
         });
         
-        document.getElementById('group-list').innerHTML = '';
+        const grpList = document.getElementById('group-list');
+        if (grpList) grpList.innerHTML = '';
+        
         if (res.groups) res.groups.forEach(g => {
           if (g.memberKeys) Object.keys(g.memberKeys).forEach(m => {
             if (g.memberKeys[m]) friendPublicKeys[m] = g.memberKeys[m];
@@ -909,28 +955,30 @@
     }
 
     // --- FREUNDE SYSTEM ---
-    addFriendBtn.onclick = () => {
-      const friendName = addFriendInput.value.trim();
-      if (friendName) {
-        addFriendBtn.disabled = true;
-        addFriendBtn.innerText = "...";
-        socket.emit('add friend', friendName, (res) => {
-          addFriendBtn.disabled = false;
-          addFriendBtn.innerText = "+";
-          if (res.success) {
-            friendPublicKeys[friendName] = res.publicKey;
-            delete sharedKeys[friendName];
-            addFriendToList(friendName, res.isOnline, res.profilePic);
-            addFriendInput.value = '';
-          } else {
-            alert(res.message);
-          }
-        });
-      }
-    };
+    if (addFriendBtn && addFriendInput) {
+      addFriendBtn.onclick = () => {
+        const friendName = addFriendInput.value.trim();
+        if (friendName) {
+          addFriendBtn.disabled = true;
+          addFriendBtn.innerText = "...";
+          socket.emit('add friend', friendName, (res) => {
+            addFriendBtn.disabled = false;
+            addFriendBtn.innerText = "+";
+            if (res.success) {
+              friendPublicKeys[friendName] = res.publicKey;
+              delete sharedKeys[friendName];
+              addFriendToList(friendName, res.isOnline, res.profilePic);
+              addFriendInput.value = '';
+            } else {
+              alert(res.message);
+            }
+          });
+        }
+      };
+    }
 
     function addFriendToList(friendName, isOnline = false, profilePic = null) {
-      if (document.getElementById('friend-' + friendName)) return; // Schon in der Liste
+      if (document.getElementById('friend-' + friendName) || !friendList) return; 
       const li = document.createElement('li');
       li.id = 'friend-' + friendName;
       
@@ -957,18 +1005,22 @@
     }
 
     // --- GRUPPEN UI SYSTEM ---
-    document.getElementById('add-group-btn').onclick = () => {
-      const name = document.getElementById('add-group-input').value.trim();
-      if (name) {
-        socket.emit('create group', name, (res) => {
-          if (res.success) {
-            myGroups[res.group.id] = res.group;
-            addGroupToList(res.group);
-            document.getElementById('add-group-input').value = '';
-          }
-        });
-      }
-    };
+    const addGrpBtn = document.getElementById('add-group-btn');
+    const addGrpInp = document.getElementById('add-group-input');
+    if (addGrpBtn && addGrpInp) {
+      addGrpBtn.onclick = () => {
+        const name = addGrpInp.value.trim();
+        if (name) {
+          socket.emit('create group', name, (res) => {
+            if (res.success) {
+              myGroups[res.group.id] = res.group;
+              addGroupToList(res.group);
+              addGrpInp.value = '';
+            }
+          });
+        }
+      };
+    }
 
     function addGroupToList(group) {
       if (document.getElementById('group-' + group.id)) document.getElementById('group-' + group.id).remove();
@@ -982,10 +1034,12 @@
       
       li.innerHTML = `${avatarHtml}<span style="flex:1;">${group.name}</span>`;
       li.onclick = () => openGroupChat(group.id);
-      document.getElementById('group-list').appendChild(li);
+      const grpList = document.getElementById('group-list');
+      if(grpList) grpList.appendChild(li);
     }
 
     function renderGroupMembers(group) {
+      if (!groupMembersList) return;
       groupMembersList.innerHTML = '';
       groupMembersList.style.display = 'block';
       group.members.forEach(m => {
@@ -1001,24 +1055,35 @@
       });
     }
 
-    inviteGroupBtn.onclick = () => {
-      document.getElementById('invite-input').value = '';
-      document.getElementById('invite-modal').style.display = 'flex';
-      document.getElementById('invite-input').focus();
-    };
+    if (inviteGroupBtn) {
+      inviteGroupBtn.onclick = () => {
+        const inviteInp = document.getElementById('invite-input');
+        const inviteMod = document.getElementById('invite-modal');
+        if (inviteInp) inviteInp.value = '';
+        if (inviteMod) inviteMod.style.display = 'flex';
+        if (inviteInp) inviteInp.focus();
+      };
+    }
 
-    document.getElementById('submit-invite-btn').onclick = () => {
-      const friendName = document.getElementById('invite-input').value.trim();
-      if (friendName) {
-        socket.emit('invite to group', { groupId: currentGroupId, username: friendName }, (res) => {
-          if (res.success) document.getElementById('invite-modal').style.display = 'none';
-          else alert(res.message);
-        });
-      }
-    };
-    document.getElementById('invite-input').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') document.getElementById('submit-invite-btn').click();
-    });
+    const subInvBtn = document.getElementById('submit-invite-btn');
+    if (subInvBtn) {
+      subInvBtn.onclick = () => {
+        const friendName = document.getElementById('invite-input').value.trim();
+        if (friendName) {
+          socket.emit('invite to group', { groupId: currentGroupId, username: friendName }, (res) => {
+            if (res.success) document.getElementById('invite-modal').style.display = 'none';
+            else alert(res.message);
+          });
+        }
+      };
+    }
+    
+    const invInp = document.getElementById('invite-input');
+    if (invInp) {
+      invInp.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && subInvBtn) subInvBtn.click();
+      });
+    }
 
     socket.on('friend added', (data) => {
       friendPublicKeys[data.name] = data.publicKey;
@@ -1046,19 +1111,23 @@
       if (avatar) avatar.style.backgroundImage = `url(${data.pic})`;
     });
 
-    document.getElementById('my-avatar').onclick = () => document.getElementById('my-avatar-upload').click();
-    document.getElementById('my-avatar-upload').onchange = function() {
-      const file = this.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const base64 = e.target.result;
-          document.getElementById('my-avatar').style.backgroundImage = `url(${base64})`;
-          socket.emit('update profile pic', base64);
-        };
-        reader.readAsDataURL(file);
-      }
-    };
+    const myAvatarBtn = document.getElementById('my-avatar');
+    const myAvatarUp = document.getElementById('my-avatar-upload');
+    if (myAvatarBtn && myAvatarUp) {
+      myAvatarBtn.onclick = () => myAvatarUp.click();
+      myAvatarUp.onchange = function() {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const base64 = e.target.result;
+            myAvatarBtn.style.backgroundImage = `url(${base64})`;
+            socket.emit('update profile pic', base64);
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+    }
 
     // Gruppen Sockets
     socket.on('group updated', (group) => {
@@ -1076,19 +1145,23 @@
       if (document.getElementById('group-' + groupId)) document.getElementById('group-' + groupId).remove();
       if (currentGroupId === groupId) {
         currentGroupId = null;
-        chatPartnerName.innerText = "Wähle einen Chat";
-        groupMembersList.style.display = 'none';
-        inviteGroupBtn.style.display = 'none';
-        messagesContainer.innerHTML = '';
-        messageInput.disabled = true;
+        if(chatPartnerName) chatPartnerName.innerText = "Wähle einen Chat";
+        if(groupMembersList) groupMembersList.style.display = 'none';
+        if(inviteGroupBtn) inviteGroupBtn.style.display = 'none';
+        if(messagesContainer) messagesContainer.innerHTML = '';
+        if(messageInput) messageInput.disabled = true;
       }
     });
     socket.on('group deleted', (groupId) => {
       delete myGroups[groupId];
       if (document.getElementById('group-' + groupId)) document.getElementById('group-' + groupId).remove();
       if (currentGroupId === groupId) {
-        if (window.innerWidth <= 768 && typeof mobileBackBtn !== 'undefined') mobileBackBtn.click();
-        else { currentGroupId = null; chatPartnerName.innerText = "Wähle einen Chat"; messagesContainer.innerHTML = ''; }
+        if (window.innerWidth <= 768 && typeof mobileBackBtn !== 'undefined' && mobileBackBtn) mobileBackBtn.click();
+        else { 
+          currentGroupId = null; 
+          if(chatPartnerName) chatPartnerName.innerText = "Wähle einen Chat"; 
+          if(messagesContainer) messagesContainer.innerHTML = ''; 
+        }
       }
       alert("ℹ️ Eine Gruppe wurde vom Besitzer gelöscht.");
     });
@@ -1097,24 +1170,26 @@
     function openChat(friendName) {
       currentChatPartner = friendName;
       currentGroupId = null;
-      chatPartnerName.innerText = 'Chat mit ' + friendName;
-      chatEncryption.style.display = 'flex';
-      groupMembersList.style.display = 'none';
-      inviteGroupBtn.style.display = 'none';
-      document.getElementById('group-owner-actions').style.display = 'none';
+      if(chatPartnerName) chatPartnerName.innerText = 'Chat mit ' + friendName;
+      if(chatEncryption) chatEncryption.style.display = 'flex';
+      if(groupMembersList) groupMembersList.style.display = 'none';
+      if(inviteGroupBtn) inviteGroupBtn.style.display = 'none';
+      
+      const grpOwnerAct = document.getElementById('group-owner-actions');
+      if(grpOwnerAct) grpOwnerAct.style.display = 'none';
       
       document.querySelectorAll('#friend-list li').forEach(li => li.classList.remove('active'));
       document.querySelectorAll('#group-list li').forEach(li => li.classList.remove('active'));
-      document.getElementById('friend-' + friendName).classList.add('active');
-
-      messageInput.disabled = false;
-      sendBtn.disabled = false;
-      attachBtn.disabled = false;
-      emojiBtn.disabled = false;
       
-      // Chatverlauf vom Server abrufen
+      const frItem = document.getElementById('friend-' + friendName);
+      if(frItem) frItem.classList.add('active');
+
+      if(messageInput) messageInput.disabled = false;
+      if(sendBtn) sendBtn.disabled = false;
+      if(attachBtn) attachBtn.disabled = false;
+      if(emojiBtn) emojiBtn.disabled = false;
+      
       socket.emit('fetch chat', friendName, async (history) => {
-        // Vergangene Nachrichten entschlüsseln
         const decryptedHistory = [];
         for (let msg of history) {
           if (msg.iv) msg.text = await decryptText(msg.text, msg.iv, friendName);
@@ -1123,12 +1198,11 @@
         }
         chatHistory[friendName] = decryptedHistory;
         
-        // Dem Server mitteilen, dass wir diesen Chat jetzt lesen
         socket.emit('mark as read', friendName);
         renderMessages();
       });
       
-      showMobileChat();
+      if (typeof showMobileChat === 'function') showMobileChat();
     }
 
     function openGroupChat(groupId) {
@@ -1136,22 +1210,30 @@
       if (!group) return;
       currentGroupId = groupId;
       currentChatPartner = null;
-      chatPartnerName.innerText = group.name;
-      chatEncryption.style.display = 'flex';
+      if(chatPartnerName) chatPartnerName.innerText = group.name;
+      if(chatEncryption) chatEncryption.style.display = 'flex';
       renderGroupMembers(group);
-      inviteGroupBtn.style.display = 'inline-block';
+      if(inviteGroupBtn) inviteGroupBtn.style.display = 'inline-block';
 
-      if (group.owner === currentUser) {
-        document.getElementById('group-owner-actions').style.display = 'flex';
-      } else {
-        document.getElementById('group-owner-actions').style.display = 'none';
+      const grpOwnerAct = document.getElementById('group-owner-actions');
+      if (grpOwnerAct) {
+        if (group.owner === currentUser) {
+          grpOwnerAct.style.display = 'flex';
+        } else {
+          grpOwnerAct.style.display = 'none';
+        }
       }
 
       document.querySelectorAll('#friend-list li').forEach(li => li.classList.remove('active'));
       document.querySelectorAll('#group-list li').forEach(li => li.classList.remove('active'));
-      document.getElementById('group-' + groupId).classList.add('active');
+      
+      const grItem = document.getElementById('group-' + groupId);
+      if(grItem) grItem.classList.add('active');
 
-      messageInput.disabled = false; sendBtn.disabled = false; attachBtn.disabled = false; emojiBtn.disabled = false;
+      if(messageInput) messageInput.disabled = false; 
+      if(sendBtn) sendBtn.disabled = false; 
+      if(attachBtn) attachBtn.disabled = false; 
+      if(emojiBtn) emojiBtn.disabled = false;
 
       socket.emit('fetch group chat', groupId, async (history) => {
         const decryptedHistory = [];
@@ -1169,10 +1251,11 @@
         renderMessages();
       });
       
-      showMobileChat();
+      if (typeof showMobileChat === 'function') showMobileChat();
     }
 
     function renderMessages() {
+      if (!messagesContainer) return;
       messagesContainer.innerHTML = '';
       const targetId = currentGroupId || currentChatPartner;
       if (!targetId || !chatHistory[targetId]) return;
@@ -1185,7 +1268,7 @@
         let statusHtml = '';
         if (isSelf) {
           if (msg.isGroup) {
-            statusHtml = '<span class="msg-status">✓</span>'; // Bei Gruppen gibt es aktuell nur einfaches "Gelesen" (Gesendet)
+            statusHtml = '<span class="msg-status">✓</span>'; 
           } else {
             const readTimeStr = msg.readTime ? `<span style="font-size:9px; font-weight:normal; opacity:0.8; margin-left:4px;">um ${msg.readTime}</span>` : '';
             statusHtml = msg.read ? `<span class="msg-status read">✓✓${readTimeStr}</span>` : '<span class="msg-status">✓</span>';
@@ -1197,7 +1280,6 @@
         let displayText = msg.text;
         let contentHtml = `<span>${displayText}</span>`;
         
-        // Prüfen, ob die Nachricht ein Bild ist
         if (displayText.startsWith('IMG:data:image')) {
           contentHtml = `<img src="${displayText.substring(4)}" class="msg-image" style="cursor: zoom-in;" onclick="openImageModal(this.src)" />`;
         }
@@ -1217,6 +1299,7 @@
     }
 
     async function sendMessage() {
+      if (!messageInput) return;
       try {
         let text = messageInput.value.trim();
         
@@ -1245,94 +1328,98 @@
     }
     
     // --- BILDER SENDEN ---
-    attachBtn.onclick = () => chatImageUpload.click();
-    chatImageUpload.onchange = function() {
-      const file = this.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const img = new Image();
-          img.onload = async function() {
-            try {
-              // Bild verkleinern (Komprimierung)
-              const canvas = document.createElement('canvas');
-              const MAX_WIDTH = 800;
-              const MAX_HEIGHT = 800;
-              let width = img.width;
-              let height = img.height;
+    if (attachBtn && chatImageUpload) {
+      attachBtn.onclick = () => chatImageUpload.click();
+      chatImageUpload.onchange = function() {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const img = new Image();
+            img.onload = async function() {
+              try {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 800;
+                const MAX_HEIGHT = 800;
+                let width = img.width;
+                let height = img.height;
 
-              if (width > height) {
-                if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
-              } else {
-                if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
-              }
-              canvas.width = width;
-              canvas.height = height;
-              const ctx = canvas.getContext('2d');
-              ctx.drawImage(img, 0, 0, width, height);
-
-              // Als flottes JPEG umwandeln
-              const base64 = canvas.toDataURL('image/jpeg', 0.8);
-              const text = "IMG:" + base64; 
-              
-              if (currentGroupId) {
-                const group = myGroups[currentGroupId];
-                const payloads = {};
-                for (let member of group.members) {
-                  const encrypted = await encryptText(text, member);
-                  payloads[member] = { text: encrypted.ciphertext || text, iv: encrypted.iv };
+                if (width > height) {
+                  if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                } else {
+                  if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
                 }
-                socket.emit('group message', { groupId: currentGroupId, payloads });
-                playNotificationSound(true);
-              } else if (currentChatPartner) {
-                 const encrypted = await encryptText(text, currentChatPartner);
-                 socket.emit('private message', { to: currentChatPartner, text: encrypted.ciphertext || text, iv: encrypted.iv });
-                 playNotificationSound(true);
-              }
-            } catch (err) {
-              alert("Fehler beim Senden des Bildes: " + err.message);
-              console.error(err);
-            }
-          };
-          img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-        this.value = ''; // Input zurücksetzen
-      }
-    };
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
 
-    sendBtn.onclick = sendMessage;
-    messageInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
-    
-    // Signal senden, dass wir tippen
-    messageInput.addEventListener('input', () => {
-      if (!currentChatPartner) return;
-      socket.emit('typing', currentChatPartner);
-      clearTimeout(typingTimeout);
-      typingTimeout = setTimeout(() => socket.emit('stop typing', currentChatPartner), 1500);
-    });
+                const base64 = canvas.toDataURL('image/jpeg', 0.8);
+                const text = "IMG:" + base64; 
+                
+                if (currentGroupId) {
+                  const group = myGroups[currentGroupId];
+                  const payloads = {};
+                  for (let member of group.members) {
+                    const encrypted = await encryptText(text, member);
+                    payloads[member] = { text: encrypted.ciphertext || text, iv: encrypted.iv };
+                  }
+                  socket.emit('group message', { groupId: currentGroupId, payloads });
+                  playNotificationSound(true);
+                } else if (currentChatPartner) {
+                   const encrypted = await encryptText(text, currentChatPartner);
+                   socket.emit('private message', { to: currentChatPartner, text: encrypted.ciphertext || text, iv: encrypted.iv });
+                   playNotificationSound(true);
+                }
+              } catch (err) {
+                alert("Fehler beim Senden des Bildes: " + err.message);
+                console.error(err);
+              }
+            };
+            img.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+          this.value = ''; 
+        }
+      };
+    }
+
+    if (sendBtn) sendBtn.onclick = sendMessage;
+    if (messageInput) {
+      messageInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+      
+      messageInput.addEventListener('input', () => {
+        if (!currentChatPartner) return;
+        socket.emit('typing', currentChatPartner);
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => socket.emit('stop typing', currentChatPartner), 1500);
+      });
+    }
 
     socket.on('typing', (username) => {
       if (currentChatPartner === username) {
-        document.getElementById('typing-indicator').style.display = 'block';
-        document.getElementById('typing-user').innerText = username;
-        messagesContainer.scrollTo(0, messagesContainer.scrollHeight);
+        const ind = document.getElementById('typing-indicator');
+        const userSp = document.getElementById('typing-user');
+        if(ind) ind.style.display = 'block';
+        if(userSp) userSp.innerText = username;
+        if(messagesContainer) messagesContainer.scrollTo(0, messagesContainer.scrollHeight);
       }
     });
 
     socket.on('stop typing', (username) => {
-      if (currentChatPartner === username) document.getElementById('typing-indicator').style.display = 'none';
+      if (currentChatPartner === username) {
+        const ind = document.getElementById('typing-indicator');
+        if(ind) ind.style.display = 'none';
+      }
     });
 
     socket.on('private message', async (msg) => {
-      const chatWith = msg.from === currentUser ? msg.to : msg.from; // Mit wem ist dieser Chat?
+      const chatWith = msg.from === currentUser ? msg.to : msg.from; 
       if (!chatHistory[chatWith]) chatHistory[chatWith] = [];
       
-      // Eingehende Nachricht live entschlüsseln
       if (msg.iv) msg.text = await decryptText(msg.text, msg.iv, chatWith);
       else if (msg.text.startsWith('E2E:')) msg.text = "🔒 [Alte Verschlüsselung]";
 
-      // Eigene neue Nachrichten sind am Anfang ungelesen
       if (msg.from === currentUser) {
         msg.read = false;
       }
@@ -1340,14 +1427,12 @@
       chatHistory[chatWith].push(msg);
 
       if (currentChatPartner === chatWith) {
-        // Wenn der Chat offen ist und die Nachricht vom Partner kommt -> direkt als gelesen markieren
         if (msg.from !== currentUser) {
           socket.emit('mark as read', msg.from);
         }
         renderMessages();
       }
       
-      // Sound abspielen, wenn die Nachricht von jemand anderem kommt
       if (msg.from !== currentUser) {
         playNotificationSound();
         if (typeof showPushNotification === 'function') showPushNotification(msg.from, "Hat dir eine Nachricht gesendet.");
@@ -1379,7 +1464,6 @@
             msg.readTime = readTime;
           }
         });
-        // Anzeige aktualisieren, falls wir gerade in dem Chat sind
         if (currentChatPartner === readerName) renderMessages();
       }
     });
