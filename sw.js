@@ -12,11 +12,13 @@ self.addEventListener('fetch', (e) => {
 
 self.addEventListener('push', function(e) {
   const data = e.data ? e.data.json() : { title: 'Dex Messager', body: 'Neue Nachricht' };
+  const isCall = data.title.includes('Anruf');
   const options = {
     body: data.body,
     icon: 'icon-192.png',
     badge: 'icon-192.png',
-    vibrate: [100, 50, 100]
+    vibrate: isCall ? [500, 200, 500, 200, 500, 200, 500, 200, 500] : [100, 50, 100],
+    requireInteraction: isCall // Sorgt dafür, dass die Meldung fest auf dem Sperrbildschirm bleibt!
   };
   e.waitUntil(self.registration.showNotification(data.title, options));
 });
