@@ -18,7 +18,9 @@ self.addEventListener('push', function(e) {
     icon: 'icon-192.png',
     badge: 'icon-192.png',
     vibrate: isCall ? [500, 200, 500, 200, 500, 200, 500, 200, 500] : [100, 50, 100],
-    requireInteraction: isCall // Sorgt dafür, dass die Meldung fest auf dem Sperrbildschirm bleibt!
+    requireInteraction: isCall, // Sorgt dafür, dass die Meldung fest auf dem Sperrbildschirm bleibt!
+    tag: isCall ? 'incoming-call' : 'new-msg',
+    renotify: isCall // Zwingt das Handy bei JEDEM neuen Ping erneut zu bimmeln!
   };
   e.waitUntil(self.registration.showNotification(data.title, options));
 });
