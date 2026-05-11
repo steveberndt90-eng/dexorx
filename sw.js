@@ -3,35 +3,55 @@ self.addEventListener('install', (e) => {
 });
 
 self.addEventListener('activate', (e) => {
-  return self.clients.claim();
+  e.waitUntil(self.clients.claim());
 });
 
 self.addEventListener('fetch', (e) => {
   e.respondWith(fetch(e.request).catch(() => new Response('App ist offline')));
 });
 
-self.addEventListener('push', function(e) {
-  const data = e.data ? e.data.json() : { title: 'Dex Messager', body: 'Neue Nachricht' };
-  const isCall = data.title.includes('Anruf');
+self.addEventListener('push', (e) => {
+  let data = { title: 'Dex Messager', body: 'Neue Nachricht' };
+
+  try {
+    if (e.data) data = e.data.json();
+  } catch (err) {
+    data = { title: 'Dex Messager', body: e.data ? e.data.text() : 'Neue Nachricht' };
+  }
+
+  const title = data.title || 'Dex Messager';
+  const body = data.body || 'Neue Nachricht';
+  const isCall = title.includes('Anruf') || body.includes('ruft');
   const options = {
-    body: data.body,
-    icon: 'icon-192.png',
-    badge: 'icon-192.png',
+    body,
+    icon: 'icon.svg',
+    badge: 'icon.svg',
     vibrate: isCall ? [500, 200, 500, 200, 500, 200, 500, 200, 500] : [100, 50, 100],
-    requireInteraction: isCall, // Sorgt dafür, dass die Meldung fest auf dem Sperrbildschirm bleibt!
+    requireInteraction: isCall,
     tag: isCall ? 'incoming-call' : 'new-msg',
-    renotify: isCall // Zwingt das Handy bei JEDEM neuen Ping erneut zu bimmeln!
+    renotify: isCall,
+    timestamp: Date.now(),
+    silent: false,
+    data: { url: data.url || self.registration.scope },
+    actions: isCall
+      ? [{ action: 'open', title: 'Öffnen' }]
+      : [{ action: 'open', title: 'Antworten' }]
   };
-  e.waitUntil(self.registration.showNotification(data.title, options));
+
+  e.waitUntil(self.registration.showNotification(title, options));
 });
 
-self.addEventListener('notificationclick', function(e) {
+self.addEventListener('notificationclick', (e) => {
   e.notification.close();
-  e.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
+  const targetUrl = e.notification.data && e.notification.data.url
+    ? e.notification.data.url
+    : self.registration.scope;
+
+  e.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
     if (windowClients.length > 0) {
-      return windowClients[0].focus(); // Holt die App in den Vordergrund, wenn sie im Hintergrund offen ist!
-    } else {
-      return clients.openWindow(self.registration.scope); // Nutzt absolut sicher den Hauptordner der App!
+      return windowClients[0].focus();
     }
+
+    return clients.openWindow(targetUrl);
   }));
 });
